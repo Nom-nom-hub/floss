@@ -14,12 +14,12 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/catwalk/pkg/catwalk"
-	"github.com/charmbracelet/crush/internal/csync"
-	"github.com/charmbracelet/crush/internal/env"
-	"github.com/charmbracelet/crush/internal/fsext"
-	"github.com/charmbracelet/crush/internal/home"
-	"github.com/charmbracelet/crush/internal/log"
 	powernapConfig "github.com/charmbracelet/x/powernap/pkg/config"
+	"github.com/nom-nom-hub/floss/internal/csync"
+	"github.com/nom-nom-hub/floss/internal/env"
+	"github.com/nom-nom-hub/floss/internal/fsext"
+	"github.com/nom-nom-hub/floss/internal/home"
+	"github.com/nom-nom-hub/floss/internal/log"
 )
 
 const defaultCatwalkURL = "https://catwalk.charm.sh"

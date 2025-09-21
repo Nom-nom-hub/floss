@@ -14,7 +14,7 @@ import (
 
 	"github.com/charmbracelet/catwalk/pkg/catwalk"
 	"github.com/charmbracelet/catwalk/pkg/embedded"
-	"github.com/charmbracelet/crush/internal/home"
+	"github.com/nom-nom-hub/floss/internal/home"
 )
 
 type ProviderClient interface {

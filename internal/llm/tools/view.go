@@ -12,9 +12,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/charmbracelet/crush/internal/csync"
-	"github.com/charmbracelet/crush/internal/lsp"
-	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/nom-nom-hub/floss/internal/csync"
+	"github.com/nom-nom-hub/floss/internal/lsp"
+	"github.com/nom-nom-hub/floss/internal/permission"
 )
 
 //go:embed view.md

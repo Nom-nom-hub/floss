@@ -12,12 +12,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/charmbracelet/crush/internal/config"
-	"github.com/charmbracelet/crush/internal/csync"
-	"github.com/charmbracelet/crush/internal/fsext"
 	powernap "github.com/charmbracelet/x/powernap/pkg/lsp"
 	"github.com/charmbracelet/x/powernap/pkg/lsp/protocol"
 	"github.com/charmbracelet/x/powernap/pkg/transport"
+	"github.com/nom-nom-hub/floss/internal/config"
+	"github.com/nom-nom-hub/floss/internal/csync"
+	"github.com/nom-nom-hub/floss/internal/fsext"
 )
 
 type Client struct {

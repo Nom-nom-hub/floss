@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/charmbracelet/crush/internal/config"
+	"github.com/nom-nom-hub/floss/internal/config"
 )
 
 func TestPowernapClient(t *testing.T) {

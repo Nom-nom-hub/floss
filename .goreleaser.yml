@@ -68,7 +68,7 @@ builds:
       - goos: android
         goarch: "386"
     ldflags:
-      - -s -w -X github.com/charmbracelet/crush/internal/version.Version={{.Version}}
+      - -s -w -X github.com/nom-nom-hub/floss/internal/version.Version={{.Version}}
 
 archives:
   - name_template: >-
@@ -196,8 +196,8 @@ scoops:
 
 npms:
   - name: "@charmland/floss"
-    repository: "git+https://github.com/charmbracelet/crush.git"
-    bugs: https://github.com/charmbracelet/crush/issues
+    repository: "git+https://github.com/nom-nom-hub/floss.git"
+    bugs: https://github.com/nom-nom-hub/floss/issues
     access: public
 
 nfpms:
@@ -261,8 +261,8 @@ winget:
   - publisher: charmbracelet
     copyright: Charmbracelet, Inc
     publisher_url: https://charm.land
-    release_notes_url: "https://github.com/charmbracelet/crush/releases/tag/{{.Tag}}"
-    license_url: https://github.com/charmbracelet/crush/blob/main/LICENSE.md
+    release_notes_url: "https://github.com/nom-nom-hub/floss/releases/tag/{{.Tag}}"
+    license_url: https://github.com/nom-nom-hub/floss/blob/main/LICENSE.md
     commit_author:
       name: "Charm"
       email: "charmcli@users.noreply.github.com"

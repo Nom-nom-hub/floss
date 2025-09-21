@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/charmbracelet/crush/internal/app"
-	"github.com/charmbracelet/crush/internal/config"
-	"github.com/charmbracelet/crush/internal/csync"
-	"github.com/charmbracelet/crush/internal/lsp"
-	"github.com/charmbracelet/crush/internal/tui/components/core"
-	"github.com/charmbracelet/crush/internal/tui/styles"
 	"github.com/charmbracelet/lipgloss/v2"
 	"github.com/charmbracelet/x/powernap/pkg/lsp/protocol"
+	"github.com/nom-nom-hub/floss/internal/app"
+	"github.com/nom-nom-hub/floss/internal/config"
+	"github.com/nom-nom-hub/floss/internal/csync"
+	"github.com/nom-nom-hub/floss/internal/lsp"
+	"github.com/nom-nom-hub/floss/internal/tui/components/core"
+	"github.com/nom-nom-hub/floss/internal/tui/styles"
 )
 
 // RenderOptions contains options for rendering LSP lists.

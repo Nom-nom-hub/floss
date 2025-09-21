@@ -5,17 +5,17 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
-	"github.com/charmbracelet/crush/internal/config"
-	"github.com/charmbracelet/crush/internal/csync"
-	"github.com/charmbracelet/crush/internal/fsext"
-	"github.com/charmbracelet/crush/internal/lsp"
-	"github.com/charmbracelet/crush/internal/pubsub"
-	"github.com/charmbracelet/crush/internal/session"
-	"github.com/charmbracelet/crush/internal/tui/styles"
-	"github.com/charmbracelet/crush/internal/tui/util"
 	"github.com/charmbracelet/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/charmbracelet/x/powernap/pkg/lsp/protocol"
+	"github.com/nom-nom-hub/floss/internal/config"
+	"github.com/nom-nom-hub/floss/internal/csync"
+	"github.com/nom-nom-hub/floss/internal/fsext"
+	"github.com/nom-nom-hub/floss/internal/lsp"
+	"github.com/nom-nom-hub/floss/internal/pubsub"
+	"github.com/nom-nom-hub/floss/internal/session"
+	"github.com/nom-nom-hub/floss/internal/tui/styles"
+	"github.com/nom-nom-hub/floss/internal/tui/util"
 )
 
 type Header interface {

@@ -9,8 +9,8 @@ import (
 
 	_ "github.com/joho/godotenv/autoload" // automatically load .env files
 
-	"github.com/charmbracelet/crush/internal/cmd"
-	"github.com/charmbracelet/crush/internal/log"
+	"github.com/nom-nom-hub/floss/internal/cmd"
+	"github.com/nom-nom-hub/floss/internal/log"
 )
 
 func main() {

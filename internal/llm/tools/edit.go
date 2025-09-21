@@ -11,13 +11,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/crush/internal/csync"
-	"github.com/charmbracelet/crush/internal/diff"
-	"github.com/charmbracelet/crush/internal/fsext"
-	"github.com/charmbracelet/crush/internal/history"
+	"github.com/nom-nom-hub/floss/internal/csync"
+	"github.com/nom-nom-hub/floss/internal/diff"
+	"github.com/nom-nom-hub/floss/internal/fsext"
+	"github.com/nom-nom-hub/floss/internal/history"
 
-	"github.com/charmbracelet/crush/internal/lsp"
-	"github.com/charmbracelet/crush/internal/permission"
+	"github.com/nom-nom-hub/floss/internal/lsp"
+	"github.com/nom-nom-hub/floss/internal/permission"
 )
 
 type EditParams struct {

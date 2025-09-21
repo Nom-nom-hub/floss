@@ -10,19 +10,19 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
-	"github.com/charmbracelet/crush/internal/config"
-	"github.com/charmbracelet/crush/internal/csync"
-	"github.com/charmbracelet/crush/internal/db"
-	"github.com/charmbracelet/crush/internal/format"
-	"github.com/charmbracelet/crush/internal/history"
-	"github.com/charmbracelet/crush/internal/llm/agent"
-	"github.com/charmbracelet/crush/internal/log"
-	"github.com/charmbracelet/crush/internal/pubsub"
+	"github.com/nom-nom-hub/floss/internal/config"
+	"github.com/nom-nom-hub/floss/internal/csync"
+	"github.com/nom-nom-hub/floss/internal/db"
+	"github.com/nom-nom-hub/floss/internal/format"
+	"github.com/nom-nom-hub/floss/internal/history"
+	"github.com/nom-nom-hub/floss/internal/llm/agent"
+	"github.com/nom-nom-hub/floss/internal/log"
+	"github.com/nom-nom-hub/floss/internal/pubsub"
 
-	"github.com/charmbracelet/crush/internal/lsp"
-	"github.com/charmbracelet/crush/internal/message"
-	"github.com/charmbracelet/crush/internal/permission"
-	"github.com/charmbracelet/crush/internal/session"
+	"github.com/nom-nom-hub/floss/internal/lsp"
+	"github.com/nom-nom-hub/floss/internal/message"
+	"github.com/nom-nom-hub/floss/internal/permission"
+	"github.com/nom-nom-hub/floss/internal/session"
 )
 
 type App struct {

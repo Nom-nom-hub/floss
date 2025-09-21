@@ -8,10 +8,10 @@ import (
 	"strings"
 
 	"github.com/MakeNowJust/heredoc"
-	"github.com/charmbracelet/crush/internal/tui/styles"
 	"github.com/charmbracelet/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/charmbracelet/x/exp/slice"
+	"github.com/nom-nom-hub/floss/internal/tui/styles"
 )
 
 // letterform represents a letterform. It can be stretched horizontally by

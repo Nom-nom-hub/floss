@@ -9,13 +9,13 @@ import (
 	"path/filepath"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
-	"github.com/charmbracelet/crush/internal/app"
-	"github.com/charmbracelet/crush/internal/config"
-	"github.com/charmbracelet/crush/internal/db"
-	"github.com/charmbracelet/crush/internal/tui"
-	"github.com/charmbracelet/crush/internal/version"
 	"github.com/charmbracelet/fang"
 	"github.com/charmbracelet/x/term"
+	"github.com/nom-nom-hub/floss/internal/app"
+	"github.com/nom-nom-hub/floss/internal/config"
+	"github.com/nom-nom-hub/floss/internal/db"
+	"github.com/nom-nom-hub/floss/internal/tui"
+	"github.com/nom-nom-hub/floss/internal/version"
 	"github.com/spf13/cobra"
 )
 
