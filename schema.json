@@ -1,0 +1,536 @@
+{
+  "$id": "https://charm.land/floss.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Floss Configuration",
+  "description": "Configuration schema for Floss, a terminal-based AI assistant for software development.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri",
+      "description": "The schema URI for validation"
+    },
+    "models": {
+      "type": "object",
+      "description": "Model configurations for different model types",
+      "properties": {
+        "large": {
+          "$ref": "#/$defs/selectedModel"
+        },
+        "small": {
+          "$ref": "#/$defs/selectedModel"
+        }
+      },
+      "additionalProperties": false
+    },
+    "providers": {
+      "type": "object",
+      "description": "AI provider configurations",
+      "additionalProperties": {
+        "$ref": "#/$defs/providerConfig"
+      }
+    },
+    "mcp": {
+      "type": "object",
+      "description": "Model Context Protocol server configurations",
+      "additionalProperties": {
+        "$ref": "#/$defs/mcpConfig"
+      }
+    },
+    "lsp": {
+      "type": "object",
+      "description": "Language Server Protocol configurations",
+      "additionalProperties": {
+        "$ref": "#/$defs/lspConfig"
+      }
+    },
+    "options": {
+      "$ref": "#/$defs/options"
+    },
+    "permissions": {
+      "$ref": "#/$defs/permissions"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "selectedModel": {
+      "type": "object",
+      "description": "Selected model configuration",
+      "properties": {
+        "model": {
+          "type": "string",
+          "description": "The model ID as used by the provider API",
+          "examples": [
+            "gpt-4o"
+          ]
+        },
+        "provider": {
+          "type": "string",
+          "description": "The model provider ID that matches a key in the providers config",
+          "examples": [
+            "openai"
+          ]
+        },
+        "reasoning_effort": {
+          "type": "string",
+          "description": "Reasoning effort level for OpenAI models that support it",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "max_tokens": {
+          "type": "integer",
+          "description": "Maximum number of tokens for model responses",
+          "minimum": 1,
+          "maximum": 200000,
+          "examples": [
+            4096
+          ]
+        },
+        "think": {
+          "type": "boolean",
+          "description": "Enable thinking mode for Anthropic models that support reasoning"
+        }
+      },
+      "required": [
+        "model",
+        "provider"
+      ],
+      "additionalProperties": false
+    },
+    "providerConfig": {
+      "type": "object",
+      "description": "Provider configuration",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the provider",
+          "examples": [
+            "openai"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable name for the provider",
+          "examples": [
+            "OpenAI"
+          ]
+        },
+        "base_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Base URL for the provider's API",
+          "examples": [
+            "https://api.openai.com/v1"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "description": "Provider type that determines the API format",
+          "enum": [
+            "openai",
+            "anthropic",
+            "gemini",
+            "azure",
+            "vertexai"
+          ],
+          "default": "openai"
+        },
+        "api_key": {
+          "type": "string",
+          "description": "API key for authentication with the provider",
+          "examples": [
+            "$OPENAI_API_KEY"
+          ]
+        },
+        "disable": {
+          "type": "boolean",
+          "description": "Whether this provider is disabled",
+          "default": false
+        },
+        "system_prompt_prefix": {
+          "type": "string",
+          "description": "Custom prefix to add to system prompts for this provider"
+        },
+        "extra_headers": {
+          "type": "object",
+          "description": "Additional HTTP headers to send with requests",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "extra_body": {
+          "type": "object",
+          "description": "Additional fields to include in request bodies"
+        },
+        "models": {
+          "type": "array",
+          "description": "List of models available from this provider",
+          "items": {
+            "$ref": "#/$defs/model"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "base_url",
+        "type",
+        "api_key"
+      ],
+      "additionalProperties": false
+    },
+    "model": {
+      "type": "object",
+      "description": "Model configuration",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the model",
+          "examples": [
+            "gpt-4o"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable name for the model",
+          "examples": [
+            "GPT-4 Omni"
+          ]
+        },
+        "context_window": {
+          "type": "integer",
+          "description": "Maximum context window size in tokens",
+          "minimum": 1,
+          "examples": [
+            128000
+          ]
+        },
+        "default_max_tokens": {
+          "type": "integer",
+          "description": "Default maximum tokens for responses",
+          "minimum": 1,
+          "examples": [
+            4096
+          ]
+        },
+        "cost_per_1m_in": {
+          "type": "number",
+          "description": "Cost per 1 million input tokens in USD",
+          "minimum": 0,
+          "examples": [
+            5
+          ]
+        },
+        "cost_per_1m_out": {
+          "type": "number",
+          "description": "Cost per 1 million output tokens in USD",
+          "minimum": 0,
+          "examples": [
+            15
+          ]
+        },
+        "cost_per_1m_in_cached": {
+          "type": "number",
+          "description": "Cost per 1 million cached input tokens in USD",
+          "minimum": 0,
+          "examples": [
+            0.5
+          ]
+        },
+        "cost_per_1m_out_cached": {
+          "type": "number",
+          "description": "Cost per 1 million cached output tokens in USD",
+          "minimum": 0,
+          "examples": [
+            1.5
+          ]
+        },
+        "can_reason": {
+          "type": "boolean",
+          "description": "Whether the model supports reasoning",
+          "default": false
+        },
+        "supports_attachments": {
+          "type": "boolean",
+          "description": "Whether the model supports file attachments",
+          "default": false
+        },
+        "default_reasoning_effort": {
+          "type": "string",
+          "description": "Default reasoning effort for models that support it",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "context_window",
+        "default_max_tokens"
+      ],
+      "additionalProperties": false
+    },
+    "mcpConfig": {
+      "type": "object",
+      "description": "MCP server configuration",
+      "properties": {
+        "command": {
+          "type": "string",
+          "description": "Command to execute for stdio MCP servers",
+          "examples": [
+            "npx"
+          ]
+        },
+        "env": {
+          "type": "object",
+          "description": "Environment variables to set for the MCP server",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "type": "array",
+          "description": "Arguments to pass to the MCP server command",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of MCP connection",
+          "enum": [
+            "stdio",
+            "sse",
+            "http"
+          ],
+          "default": "stdio"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for HTTP or SSE MCP servers",
+          "examples": [
+            "http://localhost:3000/mcp"
+          ]
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "Whether this MCP server is disabled",
+          "default": false
+        },
+        "timeout": {
+          "type": "integer",
+          "description": "Timeout in seconds for MCP server connections",
+          "default": 15,
+          "examples": [
+            30,
+            60,
+            120
+          ]
+        },
+        "headers": {
+          "type": "object",
+          "description": "HTTP headers for HTTP/SSE MCP servers",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "lspConfig": {
+      "type": "object",
+      "description": "LSP server configuration",
+      "properties": {
+        "disabled": {
+          "type": "boolean",
+          "description": "Whether this LSP server is disabled",
+          "default": false
+        },
+        "command": {
+          "type": "string",
+          "description": "Command to execute for the LSP server",
+          "examples": [
+            "gopls"
+          ]
+        },
+        "args": {
+          "type": "array",
+          "description": "Arguments to pass to the LSP server command",
+          "items": {
+            "type": "string"
+          }
+        },
+        "env": {
+          "type": "object",
+          "description": "Environment variables to set to the LSP server command",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "filetypes": {
+          "type": "array",
+          "description": "File types this LSP server handles",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            "go",
+            "mod",
+            "rs",
+            "c",
+            "js",
+            "ts"
+          ]
+        },
+        "root_markers": {
+          "type": "array",
+          "description": "Files or directories that indicate the project root",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            "go.mod",
+            "package.json",
+            "Cargo.toml"
+          ]
+        },
+        "init_options": {
+          "type": "object",
+          "description": "Initialization options passed to the LSP server during initialize request"
+        },
+        "options": {
+          "type": "object",
+          "description": "LSP server-specific settings passed during initialization"
+        }
+      },
+      "required": [
+        "command"
+      ],
+      "additionalProperties": false
+    },
+    "tuiOptions": {
+      "type": "object",
+      "description": "Terminal user interface options",
+      "properties": {
+        "compact_mode": {
+          "type": "boolean",
+          "description": "Enable compact mode for the TUI interface",
+          "default": false
+        },
+        "diff_mode": {
+          "type": "string",
+          "description": "Diff mode for the TUI interface",
+          "enum": [
+            "unified",
+            "split"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "permissions": {
+      "type": "object",
+      "description": "Permission settings for tool usage",
+      "properties": {
+        "allowed_tools": {
+          "type": "array",
+          "description": "List of tools that don't require permission prompts",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            "bash",
+            "view"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "attribution": {
+      "type": "object",
+      "description": "Attribution settings for generated content",
+      "properties": {
+        "co_authored_by": {
+          "type": "boolean",
+          "description": "Add Co-Authored-By trailer to commit messages",
+          "default": true
+        },
+        "generated_with": {
+          "type": "boolean",
+          "description": "Add Generated with Floss line to commit messages and issues and PRs",
+          "default": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "options": {
+      "type": "object",
+      "description": "General application options",
+      "properties": {
+        "context_paths": {
+          "type": "array",
+          "description": "Paths to files containing context information for the AI",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            ".cursorrules",
+            "FLOSS.md"
+          ]
+        },
+        "tui": {
+          "$ref": "#/$defs/tuiOptions"
+        },
+        "debug": {
+          "type": "boolean",
+          "description": "Enable debug logging",
+          "default": false
+        },
+        "debug_lsp": {
+          "type": "boolean",
+          "description": "Enable debug logging for LSP servers",
+          "default": false
+        },
+        "disable_auto_summarize": {
+          "type": "boolean",
+          "description": "Disable automatic conversation summarization",
+          "default": false
+        },
+        "data_directory": {
+          "type": "string",
+          "description": "Directory for storing application data (relative to working directory)",
+          "default": ".floss",
+          "examples": [
+            ".floss"
+          ]
+        },
+        "disabled_tools": {
+          "type": "array",
+          "description": "Tools to disable",
+          "items": {
+            "type": "string"
+          }
+        },
+        "disable_provider_auto_update": {
+          "type": "boolean",
+          "description": "Disable providers auto-update",
+          "default": false
+        },
+        "attribution": {
+          "$ref": "#/$defs/attribution"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

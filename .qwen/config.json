@@ -1,0 +1,76 @@
+{
+  "agentSystem": {
+    "version": "1.1.0",
+    "name": "Goal Driven Development",
+    "description": "An AI-driven Goal Driven Development system using Qwen CLI as a base",
+    "agents": {
+      "core": [
+        "ceo_fixed",
+        "ceo_advisor_fixed",
+        "orchestrator_simplified",
+        "tech_lead_fixed",
+        "frontend_developer_updated",
+        "backend_developer_updated",
+        "qa",
+        "security_engineer",
+        "devops_updated",
+        "documentation",
+        "product_manager_enhanced",
+        "project_manager_enhanced",
+        "backend_developer",
+        "business_analyst",
+        "cybersecurity_specialist",
+        "database_administrator",
+        "data_scientist",
+        "data_engineer",
+        "frontend_developer",
+        "mobile_developer",
+        "performance_engineer",
+        "technical_writer",
+        "ui_designer",
+        "ux_designer",
+        "user_researcher",
+        "api_architect",
+        "sre",
+        "compliance_officer"
+      ],
+      "utilities": [
+        "git_workflow_enforcer",
+        "agent_communication_system",
+        "audit_logger",
+        "workflow_tester",
+        "agent_collaboration_protocol",
+        "workflow_activator",
+        "automatic_agent_selector",
+        "agent_engagement_patch",
+        "file_organization_agent",
+        "concise_documentation_agent",
+        "file_cleanup_agent",
+        "automatic_file_organization_system",
+        "file_size_monitoring_agent",
+        "conflict_resolution_protocol"
+      ]
+    },
+    "workflows": [
+      "user_login_mfa",
+      "api_development",
+      "ml_model_deployment"
+    ],
+    "git": {
+      "enforceWorkflow": true,
+      "branchNamingConvention": "role/feature-short-description",
+      "commitMessageFormat": "[ROLE] task_summary",
+      "preventDirectPush": true
+    },
+    "communication": {
+      "enableRealTime": true,
+      "messageRetentionDays": 30,
+      "encryptSensitiveMessages": true
+    },
+    "audit": {
+      "enableLogging": true,
+      "retentionDays": 30,
+      "encryptSensitiveEntries": true
+    }
+  }
+}

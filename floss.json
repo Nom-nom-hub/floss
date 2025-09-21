@@ -1,0 +1,43 @@
+{
+  "$schema": "https://charm.land/floss.json",
+  "lsp": {
+    "go": {
+      "command": "gopls",
+      "env": {
+        "GOTOOLCHAIN": "go1.23.0"
+      }
+    },
+    "typescript": {
+      "command": "typescript-language-server",
+      "args": ["--stdio"]
+    },
+    "python": {
+      "command": "pyright-langserver",
+      "args": ["--stdio"]
+    },
+    "rust": {
+      "command": "rust-analyzer"
+    },
+    "nix": {
+      "command": "nil"
+    }
+  },
+  "mcp": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "--stdio"]
+    }
+  },
+  "options": {
+    "context_paths": [
+      "README.md",
+      "FLOSS.md",
+      "docs/",
+      ".cursorrules"
+    ],
+    "tui": {
+      "compact_mode": false
+    }
+  }
+}
