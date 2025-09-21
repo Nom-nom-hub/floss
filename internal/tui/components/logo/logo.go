@@ -25,18 +25,18 @@ type Opts struct {
 	FieldColor   color.Color // diagonal lines
 	TitleColorA  color.Color // left gradient ramp point
 	TitleColorB  color.Color // right gradient ramp point
-	CharmColor   color.Color // TECK™ text color
+	CharmColor   color.Color // FLOSS text color
 	VersionColor color.Color // Version text color
 	Width        int         // width of the rendered logo, used for truncation
 }
 
-// Render renders the Floss logo. Set the argument to true to render the narrow
-// version, intended for use in a sidebar.
-//
-// The compact argument determines whether it renders compact for the sidebar
-// or wider for the main pane.
-func Render(version string, compact bool, o Opts) string {
-	const charm = " TECK™"
+	// Render renders the Floss logo. Set the argument to true to render the narrow
+	// version, intended for use in a sidebar.
+	//
+	// The compact argument determines whether it renders compact for the sidebar
+	// or wider for the main pane.
+	func Render(version string, compact bool, o Opts) string {
+		const charm = " FLOSS"
 
 	fg := func(c color.Color, s string) string {
 		return lipgloss.NewStyle().Foreground(c).Render(s)
@@ -64,7 +64,7 @@ func Render(version string, compact bool, o Opts) string {
 	}
 	floss = b.String()
 
-	// TECK and version.
+	// FLOSS and version.
 	metaRowGap := 1
 	maxVersionWidth := flossWidth - lipgloss.Width(charm) - metaRowGap
 	version = ansi.Truncate(version, maxVersionWidth, "…") // truncate version if too long.
@@ -120,7 +120,7 @@ func Render(version string, compact bool, o Opts) string {
 // smaller windows or sidebar usage.
 func SmallRender(width int) string {
 	t := styles.CurrentTheme()
-	title := t.S().Base.Foreground(t.Secondary).Render("TECK™")
+	title := t.S().Base.Foreground(t.Secondary).Render("FLOSS")
 	title = fmt.Sprintf("%s %s", title, styles.ApplyBoldForegroundGrad("Floss", t.Secondary, t.Primary))
 	remainingWidth := width - lipgloss.Width(title) - 1 // 1 for the space after "Floss"
 	if remainingWidth > 0 {

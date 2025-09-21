@@ -66,7 +66,7 @@ func (h *flossHeader) View() string {
 	var b strings.Builder
 
 	// Apply FLOSS-specific branding
-	b.WriteString(t.S().Base.Foreground(t.Secondary).Render("Charm™"))
+	b.WriteString(t.S().Base.Foreground(t.Secondary).Render("FLOSS"))
 	b.WriteString(gap)
 	
 	// Use FLOSS-specific gradient with Citron as primary and Guac as secondary

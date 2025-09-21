@@ -76,6 +76,10 @@ func New(ctx context.Context, name string, config config.LSPConfig) (*Client, er
 	// Create the powernap client
 	powernapClient, err := powernap.NewClient(clientConfig)
 	if err != nil {
+		// Check if this is a command not found error
+		if strings.Contains(err.Error(), "executable file not found") || strings.Contains(err.Error(), "no such file or directory") {
+			return nil, fmt.Errorf("failed to create powernap client: LSP server command '%s' not found in PATH - %w", config.Command, err)
+		}
 		return nil, fmt.Errorf("failed to create powernap client: %w", err)
 	}
 

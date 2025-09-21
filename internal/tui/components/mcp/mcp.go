@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/lipgloss/v2"
 
@@ -73,7 +74,13 @@ func RenderMCPList(opts RenderOptions) []string {
 			case agent.MCPStateError:
 				icon = t.ItemErrorIcon
 				if state.Error != nil {
-					description = t.S().Subtle.Render(fmt.Sprintf("error: %s", state.Error.Error()))
+					// Check if this is a filesystem error
+					errorMsg := state.Error.Error()
+					if strings.Contains(errorMsg, "file") && strings.Contains(errorMsg, "system") {
+						description = t.S().Subtle.Render(fmt.Sprintf("filesystem error: %s", errorMsg))
+					} else {
+						description = t.S().Subtle.Render(fmt.Sprintf("error: %s", errorMsg))
+					}
 				} else {
 					description = t.S().Subtle.Render("error")
 				}

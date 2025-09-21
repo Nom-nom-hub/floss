@@ -73,7 +73,7 @@ func (h *header) View() string {
 
 	var b strings.Builder
 
-	b.WriteString(t.S().Base.Foreground(t.Secondary).Render("Charm™"))
+	b.WriteString(t.S().Base.Foreground(t.Secondary).Render("FLOSS"))
 	b.WriteString(gap)
 	b.WriteString(styles.ApplyBoldForegroundGrad("FLOSS", t.Secondary, t.Primary))
 	b.WriteString(gap)

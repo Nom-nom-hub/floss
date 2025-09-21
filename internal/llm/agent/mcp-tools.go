@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"maps"
+	"os/exec"
 	"slices"
 	"strings"
 	"sync"
@@ -358,6 +359,10 @@ func createMcpClient(name string, m config.MCPConfig) (*client.Client, error) {
 	case config.MCPStdio:
 		if strings.TrimSpace(m.Command) == "" {
 			return nil, fmt.Errorf("mcp stdio config requires a non-empty 'command' field")
+		}
+		// Check if command exists in PATH
+		if _, err := exec.LookPath(m.Command); err != nil {
+			return nil, fmt.Errorf("mcp stdio command not found in PATH: %s - %w", m.Command, err)
 		}
 		return client.NewStdioMCPClientWithOptions(
 			m.Command,

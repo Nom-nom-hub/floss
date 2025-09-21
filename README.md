@@ -5,6 +5,10 @@
     <a href="https://github.com/nom-nom-hub/floss/actions"><img src="https://github.com/nom-nom-hub/floss/actions/workflows/build.yml/badge.svg" alt="Build Status"></a>
 </p>
 
+<p align="center">
+    <img src="floss_ui.png" alt="Floss UI" width="800"/>
+</p>
+
 <p align="center">Your new coding bestie, now available in your favourite terminal.<br />Your tools, your code, and your workflows, wired into your LLM of choice.</p>
 
 ## Features
@@ -510,9 +514,6 @@ This version of Floss has been customized with a distinctive branding
 instead of the original branding. All visual elements, color schemes,
 and UI components have been updated to create a unique identity while
 maintaining full compatibility with the core Floss functionality.
-
-The application header has been updated to display "TECK" instead of "Charm",
-and the version has been set to a clean "1.0.0" for a professional appearance.
 
 ## Contributing
 
