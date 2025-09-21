@@ -25,7 +25,7 @@ type Opts struct {
 	FieldColor   color.Color // diagonal lines
 	TitleColorA  color.Color // left gradient ramp point
 	TitleColorB  color.Color // right gradient ramp point
-	CharmColor   color.Color // Charm™ text color
+	CharmColor   color.Color // TECK™ text color
 	VersionColor color.Color // Version text color
 	Width        int         // width of the rendered logo, used for truncation
 }
@@ -36,7 +36,7 @@ type Opts struct {
 // The compact argument determines whether it renders compact for the sidebar
 // or wider for the main pane.
 func Render(version string, compact bool, o Opts) string {
-	const charm = " Charm™"
+	const charm = " TECK™"
 
 	fg := func(c color.Color, s string) string {
 		return lipgloss.NewStyle().Foreground(c).Render(s)
@@ -64,21 +64,63 @@ func Render(version string, compact bool, o Opts) string {
 	}
 	floss = b.String()
 
-	// Charm and version.
+	// TECK and version.
 	metaRowGap := 1
-	maxVersionWidth := crushWidth - lipgloss.Width(charm) - metaRowGap
+	maxVersionWidth := flossWidth - lipgloss.Width(charm) - metaRowGap
 	version = ansi.Truncate(version, maxVersionWidth, "…") // truncate version if too long.
-	gap := max(0, crushWidth-lipgloss.Width(charm)-lipgloss.Width(version))
+	gap := max(0, flossWidth-lipgloss.Width(charm)-lipgloss.Width(version))
 	metaRow := fg(o.CharmColor, charm) + strings.Repeat(" ", gap) + fg(o.VersionColor, version)
 
-	// Join the meta row and big Floss title.\n	floss = strings.TrimSpace(metaRow + "\n" + floss)\n\n	// Narrow version.\n	if compact {\n		field := fg(o.FieldColor, strings.Repeat(diag, flossWidth))\n		return strings.Join([]string{field, field, floss, field, ""}, "\n")\n	}\n\n	fieldHeight := lipgloss.Height(floss)\n\n	// Left field.\n	const leftWidth = 6\n	leftFieldRow := fg(o.FieldColor, strings.Repeat(diag, leftWidth))\n	leftField := new(strings.Builder)\n	for range fieldHeight {\n		fmt.Fprintln(leftField, leftFieldRow)\n	}\n\n	// Right field.\n	rightWidth := max(15, o.Width-flossWidth-leftWidth-2) // 2 for the gap.\n	const stepDownAt = 0\n	rightField := new(strings.Builder)\n	for i := range fieldHeight {\n		width := rightWidth\n		if i >= stepDownAt {\n			width = rightWidth - (i - stepDownAt)\n		}\n		fmt.Fprint(rightField, fg(o.FieldColor, strings.Repeat(diag, width)), "\n")\n	}\n\n	// Return the wide version.\n	const hGap = " "\n	logo := lipgloss.JoinHorizontal(lipgloss.Top, leftField.String(), hGap, floss, hGap, rightField.String())\n	if o.Width > 0 {\n		// Truncate the logo to the specified width.\n		lines := strings.Split(logo, "\n")\n		for i, line := range lines {\n			lines[i] = ansi.Truncate(line, o.Width, "")\n		}\n		logo = strings.Join(lines, "\n")\n	}\n	return logo
+	// Join the meta row and big Floss title.
+	floss = strings.TrimSpace(metaRow + "\n" + floss)
+
+	// Narrow version.
+	if compact {
+		field := fg(o.FieldColor, strings.Repeat(diag, flossWidth))
+		return strings.Join([]string{field, field, floss, field, ""}, "\n")
+	}
+
+	fieldHeight := lipgloss.Height(floss)
+
+	// Left field.
+	const leftWidth = 6
+	leftFieldRow := fg(o.FieldColor, strings.Repeat(diag, leftWidth))
+	leftField := new(strings.Builder)
+	for range fieldHeight {
+		fmt.Fprintln(leftField, leftFieldRow)
+	}
+
+	// Right field.
+	rightWidth := max(15, o.Width-flossWidth-leftWidth-2) // 2 for the gap.
+	const stepDownAt = 0
+	rightField := new(strings.Builder)
+	for i := range fieldHeight {
+		width := rightWidth
+		if i >= stepDownAt {
+			width = rightWidth - (i - stepDownAt)
+		}
+		fmt.Fprint(rightField, fg(o.FieldColor, strings.Repeat(diag, width)), "\n")
+	}
+
+	// Return the wide version.
+	const hGap = " "
+	logo := lipgloss.JoinHorizontal(lipgloss.Top, leftField.String(), hGap, floss, hGap, rightField.String())
+	if o.Width > 0 {
+		// Truncate the logo to the specified width.
+		lines := strings.Split(logo, "\n")
+		for i, line := range lines {
+			lines[i] = ansi.Truncate(line, o.Width, "")
+		}
+		logo = strings.Join(lines, "\n")
+	}
+	return logo
 }
 
 // SmallRender renders a smaller version of the Crush logo, suitable for
 // smaller windows or sidebar usage.
 func SmallRender(width int) string {
 	t := styles.CurrentTheme()
-	title := t.S().Base.Foreground(t.Secondary).Render("Charm™")
+	title := t.S().Base.Foreground(t.Secondary).Render("TECK™")
 	title = fmt.Sprintf("%s %s", title, styles.ApplyBoldForegroundGrad("Floss", t.Secondary, t.Primary))
 	remainingWidth := width - lipgloss.Width(title) - 1 // 1 for the space after "Floss"
 	if remainingWidth > 0 {
@@ -351,11 +393,6 @@ func letterO(stretch bool) string {
 	// █   █
 	// ▀▀▀▀▀
 
-	top := heredoc.Doc(`
-		▄
-		
-		▀
-	`)
 	middle := heredoc.Doc(`
 		▀
 		

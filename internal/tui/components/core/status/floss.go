@@ -11,13 +11,7 @@ import (
 	"github.com/nom-nom-hub/floss/internal/tui/util"
 )
 
-type StatusCmp interface {
-	util.Model
-	ToggleFullHelp()
-	SetKeyMap(keyMap help.KeyMap)
-}
-
-type statusCmp struct {
+type flossStatusCmp struct {
 	info       util.InfoMsg
 	width      int
 	messageTTL time.Duration
@@ -26,17 +20,17 @@ type statusCmp struct {
 }
 
 // clearMessageCmd is a command that clears status messages after a timeout
-func (m *statusCmp) clearMessageCmd(ttl time.Duration) tea.Cmd {
+func (m *flossStatusCmp) clearMessageCmd(ttl time.Duration) tea.Cmd {
 	return tea.Tick(ttl, func(time.Time) tea.Msg {
 		return util.ClearStatusMsg{}
 	})
 }
 
-func (m *statusCmp) Init() tea.Cmd {
+func (m *flossStatusCmp) Init() tea.Cmd {
 	return nil
 }
 
-func (m *statusCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *flossStatusCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
@@ -57,60 +51,68 @@ func (m *statusCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m *statusCmp) View() string {
-	t := styles.CurrentTheme()
-	// Base styling with proper height and padding according to UI/UX specification
-	// Height: 2 lines, Padding: 0 top/bottom, 1 left/right
-	status := t.S().Base.Padding(0, 1, 1, 1).Render(m.help.View(m.keyMap))
+func (m *flossStatusCmp) View() string {
+	// Apply FLOSS-specific styling to the status bar
+	status := getFlossStatusStyle().Padding(0, 1, 1, 1).Render(m.help.View(m.keyMap))
 	if m.info.Msg != "" {
 		status = m.infoMsg()
 	}
 	return status
 }
 
-func (m *statusCmp) infoMsg() string {
+// getFlossStatusStyle returns the FLOSS-specific status bar style
+func getFlossStatusStyle() lipgloss.Style {
+	theme := styles.CurrentTheme()
+	
+	return theme.S().Base.
+		Background(theme.BgBase).           // Pepper background
+		BorderTop(true).
+		BorderForeground(theme.Secondary).  // Guac border
+		Height(2)                           // Slightly taller
+}
+
+func (m *flossStatusCmp) infoMsg() string {
 	t := styles.CurrentTheme()
 	message := ""
 	infoType := ""
 	switch m.info.Type {
 	case util.InfoTypeError:
-		// Error: Red background with white text according to UI/UX specification
-		infoType = t.S().Base.Background(t.Error).Foreground(t.White).Padding(0, 1).Render("ERROR")
+		// Error: Cheeky background with Salt text according to FLOSS specification
+		infoType = t.S().Base.Background(t.Error).Foreground(t.FgSelected).Padding(0, 1).Render("ERROR")
 		widthLeft := m.width - (lipgloss.Width(infoType) + 2)
 		info := ansi.Truncate(m.info.Msg, widthLeft, "…")
-		message = t.S().Base.Background(t.Error).Width(widthLeft+2).Foreground(t.White).Padding(0, 1).Render(info)
+		message = t.S().Base.Background(t.Error).Width(widthLeft+2).Foreground(t.FgSelected).Padding(0, 1).Render(info)
 	case util.InfoTypeWarn:
-		// Warning: Yellow background with BgOverlay text according to UI/UX specification
+		// Warning: Zest background with BgOverlay text according to FLOSS specification
 		infoType = t.S().Base.Foreground(t.BgOverlay).Background(t.Warning).Padding(0, 1).Render("WARNING")
 		widthLeft := m.width - (lipgloss.Width(infoType) + 2)
 		info := ansi.Truncate(m.info.Msg, widthLeft, "…")
 		message = t.S().Base.Foreground(t.BgOverlay).Width(widthLeft+2).Background(t.Warning).Padding(0, 1).Render(info)
 	default:
-		// Info: Green background with white text according to UI/UX specification
-		infoType = t.S().Base.Background(t.Success).Foreground(t.White).Padding(0, 1).Render("OKAY!")
+		// Info: Guac background with Salt text according to FLOSS specification
+		infoType = t.S().Base.Background(t.Secondary).Foreground(t.FgSelected).Padding(0, 1).Render("OKAY!")
 		widthLeft := m.width - (lipgloss.Width(infoType) + 2)
 		info := ansi.Truncate(m.info.Msg, widthLeft, "…")
-		message = t.S().Base.Background(t.Success).Width(widthLeft+2).Foreground(t.White).Padding(0, 1).Render(info)
+		message = t.S().Base.Background(t.Secondary).Width(widthLeft+2).Foreground(t.FgSelected).Padding(0, 1).Render(info)
 	}
 	return ansi.Truncate(infoType+message, m.width, "…")
 }
 
-func (m *statusCmp) ToggleFullHelp() {
+func (m *flossStatusCmp) ToggleFullHelp() {
 	m.help.ShowAll = !m.help.ShowAll
 }
 
-func (m *statusCmp) SetKeyMap(keyMap help.KeyMap) {
+func (m *flossStatusCmp) SetKeyMap(keyMap help.KeyMap) {
 	m.keyMap = keyMap
 }
 
-func NewStatusCmp() StatusCmp {
+// NewFlossStatusCmp creates a new FLOSS-styled status component
+func NewFlossStatusCmp() StatusCmp {
 	t := styles.CurrentTheme()
 	help := help.New()
 	help.Styles = t.S().Help
-	return &statusCmp{
+	return &flossStatusCmp{
 		messageTTL: 5 * time.Second,
 		help:       help,
 	}
 }
-
-

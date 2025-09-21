@@ -10,34 +10,34 @@ func NewFlossTheme() *Theme {
 		Name:   "floss",
 		IsDark: true,
 
-		// New color palette for Floss
-		Primary:   charmtone.Mauve,     // Purple accent
-		Secondary: charmtone.Squid,     // Teal
-		Tertiary:  charmtone.Mustard,   // Yellow
-		Accent:    charmtone.Cheeky,    // Pink
+		// New color palette for Floss - updated to differentiate from Crush
+		Primary:   charmtone.Citron,  // Pink-Red accent (was Mauve/Purple)
+		Secondary: charmtone.Guac,    // Deep teal-blue (was Squid/Teal)
+		Tertiary:  charmtone.Mustard, // Yellow (unchanged)
+		Accent:    charmtone.Cheeky,  // Pink (reserved for warnings/errors)
 
-		// Backgrounds
-		BgBase:        charmtone.Pepper,   // Dark background
-		BgBaseLighter: charmtone.BBQ,      // Slightly lighter
-		BgSubtle:      charmtone.Charcoal, // Subtle background
-		BgOverlay:     charmtone.Iron,     // Overlay
+		// Backgrounds - adjusted for better Citron integration
+		BgBase:        charmtone.Pepper,   // Dark background (unchanged)
+		BgBaseLighter: charmtone.BBQ,      // Slightly lighter (increased contrast)
+		BgSubtle:      ParseHex("#221f30"), // Warmed Charcoal for better Citron integration
+		BgOverlay:     charmtone.Iron,     // Overlay (unchanged)
 
-		// Foregrounds
-		FgBase:      charmtone.Ash,     // Base text
-		FgMuted:     charmtone.Squid,   // Muted text
-		FgHalfMuted: charmtone.Smoke,   // Half-muted
-		FgSubtle:    charmtone.Oyster,  // Subtle text
-		FgSelected:  charmtone.Salt,    // Selected text
+		// Foregrounds - maintained core text hierarchy
+		FgBase:      charmtone.Ash,    // Base text (unchanged)
+		FgMuted:     charmtone.Squid,  // Muted text (unchanged)
+		FgHalfMuted: charmtone.Smoke,  // Half-muted (unchanged)
+		FgSubtle:    charmtone.Oyster, // Subtle text (unchanged)
+		FgSelected:  charmtone.Salt,   // Selected text (unchanged)
 
-		// Borders
+		// Borders - adjusted for FLOSS styling
 		Border:      charmtone.Charcoal,
-		BorderFocus: charmtone.Mauve,
+		BorderFocus: charmtone.Citron, // Citron for focus (was Mauve)
 
-		// Status
-		Success: charmtone.Julep,    // Green
-		Error:   charmtone.Sriracha, // Red
-		Warning: charmtone.Zest,     // Orange
-		Info:    charmtone.Malibu,   // Blue
+		// Status - maintained but with adjusted applications
+		Success: charmtone.Julep,    // Green (unchanged)
+		Error:   charmtone.Sriracha, // Red (unchanged)
+		Warning: charmtone.Zest,     // Orange (unchanged)
+		Info:    charmtone.Guac,     // Blue-Green (was Malibu, now matches Secondary)
 
 		// Colors
 		White: charmtone.Butter,
@@ -58,19 +58,20 @@ func NewFlossTheme() *Theme {
 		Cherry:   charmtone.Cherry,
 	}
 
-	// Text selection.
-	t.TextSelection = lipgloss.NewStyle().Foreground(charmtone.Salt).Background(charmtone.Mauve)
+	// Text selection - updated to use Citron instead of Mauve
+	t.TextSelection = lipgloss.NewStyle().Foreground(charmtone.Salt).Background(charmtone.Citron)
 
-	// LSP and MCP status.
+	// LSP and MCP status - updated to use FLOSS color scheme
 	t.ItemOfflineIcon = lipgloss.NewStyle().Foreground(charmtone.Squid).SetString("●")
 	t.ItemBusyIcon = t.ItemOfflineIcon.Foreground(charmtone.Mustard)
 	t.ItemErrorIcon = t.ItemOfflineIcon.Foreground(charmtone.Coral)
 	t.ItemOnlineIcon = t.ItemOfflineIcon.Foreground(charmtone.Julep)
 
-	t.YoloIconFocused = lipgloss.NewStyle().Foreground(charmtone.Oyster).Background(charmtone.Mustard).Bold(true).SetString(" ! ")
-	t.YoloIconBlurred = t.YoloIconFocused.Foreground(charmtone.Pepper).Background(charmtone.Squid)
+	// Yolo mode styling - updated to use FLOSS colors
+	t.YoloIconFocused = lipgloss.NewStyle().Foreground(charmtone.Oyster).Background(charmtone.Citron).Bold(true).SetString(" ! ")
+	t.YoloIconBlurred = t.YoloIconFocused.Foreground(charmtone.Pepper).Background(charmtone.Guac)
 	t.YoloDotsFocused = lipgloss.NewStyle().Foreground(charmtone.Zest).SetString(":::")
-	t.YoloDotsBlurred = t.YoloDotsFocused.Foreground(charmtone.Squid)
+	t.YoloDotsBlurred = t.YoloDotsFocused.Foreground(charmtone.Guac)
 
 	return t
 }

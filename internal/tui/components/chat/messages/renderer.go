@@ -13,9 +13,9 @@ import (
 	"github.com/nom-nom-hub/floss/internal/fsext"
 	"github.com/nom-nom-hub/floss/internal/llm/agent"
 	"github.com/nom-nom-hub/floss/internal/llm/tools"
-	"github.com/nom-nom-hub/floss/internal/tui/components/core"
 	"github.com/nom-nom-hub/floss/internal/tui/highlight"
 	"github.com/nom-nom-hub/floss/internal/tui/styles"
+	"github.com/nom-nom-hub/floss/internal/tui/util/section"
 )
 
 // responseContextHeight limits the number of lines displayed in tool output
@@ -295,7 +295,7 @@ func (er editRenderer) Render(v *toolCallCmp) string {
 			return renderPlainContent(v, v.result.Content)
 		}
 
-		formatter := core.DiffFormatter().
+		formatter := section.DiffFormatter().
 			Before(fsext.PrettyPath(params.FilePath), meta.OldContent).
 			After(fsext.PrettyPath(params.FilePath), meta.NewContent).
 			Width(v.textWidth() - 2) // -2 for padding
@@ -346,7 +346,7 @@ func (mer multiEditRenderer) Render(v *toolCallCmp) string {
 			return renderPlainContent(v, v.result.Content)
 		}
 
-		formatter := core.DiffFormatter().
+		formatter := section.DiffFormatter().
 			Before(fsext.PrettyPath(params.FilePath), meta.OldContent).
 			After(fsext.PrettyPath(params.FilePath), meta.NewContent).
 			Width(v.textWidth() - 2) // -2 for padding

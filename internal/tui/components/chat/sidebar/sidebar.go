@@ -19,7 +19,6 @@ import (
 	"github.com/nom-nom-hub/floss/internal/pubsub"
 	"github.com/nom-nom-hub/floss/internal/session"
 	"github.com/nom-nom-hub/floss/internal/tui/components/chat"
-	"github.com/nom-nom-hub/floss/internal/tui/components/core"
 	"github.com/nom-nom-hub/floss/internal/tui/components/core/layout"
 	"github.com/nom-nom-hub/floss/internal/tui/components/files"
 	"github.com/nom-nom-hub/floss/internal/tui/components/logo"
@@ -27,6 +26,7 @@ import (
 	"github.com/nom-nom-hub/floss/internal/tui/components/mcp"
 	"github.com/nom-nom-hub/floss/internal/tui/styles"
 	"github.com/nom-nom-hub/floss/internal/tui/util"
+	"github.com/nom-nom-hub/floss/internal/tui/util/section"
 	"github.com/nom-nom-hub/floss/internal/version"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -473,7 +473,7 @@ func (m *sidebarCmp) filesBlock() string {
 		MaxWidth:    m.getMaxWidth(),
 		MaxItems:    maxFiles,
 		ShowSection: true,
-		SectionName: core.Section("Modified Files", m.getMaxWidth()),
+					SectionName: section.Section("Modified Files", m.getMaxWidth()),
 	}, true)
 }
 
@@ -487,7 +487,7 @@ func (m *sidebarCmp) lspBlock() string {
 		MaxWidth:    m.getMaxWidth(),
 		MaxItems:    maxLSPs,
 		ShowSection: true,
-		SectionName: core.Section("LSPs", m.getMaxWidth()),
+					SectionName: section.Section("LSPs", m.getMaxWidth()),
 	}, true)
 }
 
@@ -501,7 +501,7 @@ func (m *sidebarCmp) mcpBlock() string {
 		MaxWidth:    m.getMaxWidth(),
 		MaxItems:    maxMCPs,
 		ShowSection: true,
-		SectionName: core.Section("MCPs", m.getMaxWidth()),
+					SectionName: section.Section("MCPs", m.getMaxWidth()),
 	}, true)
 }
 

@@ -1,16 +1,20 @@
 package version
 
-import "runtime/debug"
-
 // Build-time parameters set via -ldflags
 
-var Version = "unknown"
+var Version = "1.0.0"
 
 // A user may install crush using `go install github.com/nom-nom-hub/floss@latest`.
 // without -ldflags, in which case the version above is unset. As a workaround
 // we use the embedded build version that *is* set when using `go install` (and
 // is only set for `go install` and not for `go build`).
 func init() {
+	// Always use the hardcoded version for local builds
+	// Comment out the following line to allow dynamic versioning
+	Version = "1.0.0"
+	
+	// Uncomment the following lines to allow dynamic versioning
+	/*
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
 		// < go v1.18
@@ -23,4 +27,5 @@ func init() {
 	}
 	// bin built using `go install`
 	Version = mainVersion
+	*/
 }

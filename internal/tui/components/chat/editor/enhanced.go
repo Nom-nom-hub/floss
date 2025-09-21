@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"slices"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/charmbracelet/bubbles/v2/key"
@@ -23,7 +24,6 @@ import (
 	"github.com/nom-nom-hub/floss/internal/session"
 	"github.com/nom-nom-hub/floss/internal/tui/components/chat"
 	"github.com/nom-nom-hub/floss/internal/tui/components/completions"
-	"github.com/nom-nom-hub/floss/internal/tui/components/core/layout"
 	"github.com/nom-nom-hub/floss/internal/tui/components/dialogs"
 	"github.com/nom-nom-hub/floss/internal/tui/components/dialogs/commands"
 	"github.com/nom-nom-hub/floss/internal/tui/components/dialogs/filepicker"
@@ -32,30 +32,7 @@ import (
 	"github.com/nom-nom-hub/floss/internal/tui/util"
 )
 
-type Editor interface {
-	util.Model
-	layout.Sizeable
-	layout.Focusable
-	layout.Help
-	layout.Positional
-
-	SetSession(session session.Session) tea.Cmd
-	IsCompletionsOpen() bool
-	HasAttachments() bool
-	Cursor() *tea.Cursor
-}
-
-type EnhancedEditor interface {
-	Editor
-	ToggleEnhancedMode() tea.Cmd
-	IsEnhancedMode() bool
-}
-
-type FileCompletionItem struct {
-	Path string // The file path
-}
-
-type editorCmp struct {
+type enhancedEditorCmp struct {
 	width              int
 	height             int
 	x, y               int
@@ -66,6 +43,7 @@ type editorCmp struct {
 	deleteMode         bool
 	readyPlaceholder   string
 	workingPlaceholder string
+	enhancedMode       bool // New: Enhanced mode flag
 
 	keyMap EditorKeyMap
 
@@ -73,9 +51,13 @@ type editorCmp struct {
 	currentQuery          string
 	completionsStartIndex int
 	isCompletionsOpen     bool
+	
+	// Animation states
+	attachmentAnimationStep int
+	isAnimating             bool
 }
 
-var DeleteKeyMaps = DeleteAttachmentKeyMaps{
+var EnhancedDeleteKeyMaps = DeleteAttachmentKeyMaps{
 	AttachmentDeleteMode: key.NewBinding(
 		key.WithKeys("ctrl+r"),
 		key.WithHelp("ctrl+r+{i}", "delete attachment at index i"),
@@ -90,15 +72,7 @@ var DeleteKeyMaps = DeleteAttachmentKeyMaps{
 	),
 }
 
-const (
-	maxAttachments = 5
-)
-
-type OpenEditorMsg struct {
-	Text string
-}
-
-func (m *editorCmp) openEditor(value string) tea.Cmd {
+func (m *enhancedEditorCmp) openEditor(value string) tea.Cmd {
 	editor := os.Getenv("EDITOR")
 	if editor == "" {
 		// Use platform-appropriate default editor
@@ -139,11 +113,11 @@ func (m *editorCmp) openEditor(value string) tea.Cmd {
 	})
 }
 
-func (m *editorCmp) Init() tea.Cmd {
+func (m *enhancedEditorCmp) Init() tea.Cmd {
 	return nil
 }
 
-func (m *editorCmp) send() tea.Cmd {
+func (m *enhancedEditorCmp) send() tea.Cmd {
 	value := m.textarea.Value()
 	value = strings.TrimSpace(value)
 
@@ -172,12 +146,12 @@ func (m *editorCmp) send() tea.Cmd {
 	)
 }
 
-func (m *editorCmp) repositionCompletions() tea.Msg {
+func (m *enhancedEditorCmp) repositionCompletions() tea.Msg {
 	x, y := m.completionsPosition()
 	return completions.RepositionCompletionsMsg{X: x, Y: y}
 }
 
-func (m *editorCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *enhancedEditorCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
@@ -188,7 +162,19 @@ func (m *editorCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, util.ReportError(fmt.Errorf("cannot add more than %d images", maxAttachments))
 		}
 		m.attachments = append(m.attachments, msg.Attachment)
-		return m, nil
+		
+		// Animate attachment addition
+		m.isAnimating = true
+		m.attachmentAnimationStep = 0
+		cmds = append(cmds, tea.Tick(time.Millisecond*30, func(t time.Time) tea.Msg {
+			m.attachmentAnimationStep++
+			if m.attachmentAnimationStep >= 10 {
+				m.isAnimating = false
+			}
+			return nil
+		}))
+		
+		return m, tea.Batch(cmds...)
 	case completions.CompletionsOpenedMsg:
 		m.isCompletionsOpen = true
 	case completions.CompletionsClosedMsg:
@@ -280,11 +266,11 @@ func (m *editorCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case m.isCompletionsOpen && curIdx <= m.completionsStartIndex:
 			cmds = append(cmds, util.CmdHandler(completions.CloseCompletionsMsg{}))
 		}
-		if key.Matches(msg, DeleteKeyMaps.AttachmentDeleteMode) {
+		if key.Matches(msg, EnhancedDeleteKeyMaps.AttachmentDeleteMode) {
 			m.deleteMode = true
 			return m, nil
 		}
-		if key.Matches(msg, DeleteKeyMaps.DeleteAllAttachments) && m.deleteMode {
+		if key.Matches(msg, EnhancedDeleteKeyMaps.DeleteAllAttachments) && m.deleteMode {
 			m.deleteMode = false
 			m.attachments = nil
 			return m, nil
@@ -308,7 +294,7 @@ func (m *editorCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, m.openEditor(m.textarea.Value())
 		}
-		if key.Matches(msg, DeleteKeyMaps.Escape) {
+		if key.Matches(msg, EnhancedDeleteKeyMaps.Escape) {
 			m.deleteMode = false
 			return m, nil
 		}
@@ -370,15 +356,15 @@ func (m *editorCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m *editorCmp) setEditorPrompt() {
+func (m *enhancedEditorCmp) setEditorPrompt() {
 	if m.app.Permissions.SkipRequests() {
-		m.textarea.SetPromptFunc(4, yoloPromptFunc)
+		m.textarea.SetPromptFunc(4, enhancedYoloPromptFunc)
 		return
 	}
-	m.textarea.SetPromptFunc(4, normalPromptFunc)
+	m.textarea.SetPromptFunc(4, enhancedNormalPromptFunc)
 }
 
-func (m *editorCmp) completionsPosition() (int, int) {
+func (m *enhancedEditorCmp) completionsPosition() (int, int) {
 	cur := m.textarea.Cursor()
 	if cur == nil {
 		return m.x, m.y + 1 // adjust for padding
@@ -388,7 +374,7 @@ func (m *editorCmp) completionsPosition() (int, int) {
 	return x, y
 }
 
-func (m *editorCmp) Cursor() *tea.Cursor {
+func (m *enhancedEditorCmp) Cursor() *tea.Cursor {
 	cursor := m.textarea.Cursor()
 	if cursor != nil {
 		cursor.X = cursor.X + m.x + 1
@@ -397,49 +383,63 @@ func (m *editorCmp) Cursor() *tea.Cursor {
 	return cursor
 }
 
-var readyPlaceholders = [...]string{
-	"Ready!",
-	"Ready...",
-	"Ready?",
-	"Ready for instructions",
+var enhancedReadyPlaceholders = [...]string{
+	"Ready for your input!",
+	"Ready to assist...",
+	"Type your message...",
+	"What can I help with?",
 }
 
-var workingPlaceholders = [...]string{
-	"Working!",
-	"Working...",
-	"Brrrrr...",
-	"Prrrrrrrr...",
-	"Processing...",
+var enhancedWorkingPlaceholders = [...]string{
+	"Processing your request...",
 	"Thinking...",
+	"Working on it...",
+	"Brrrrr... computing...",
+	"Analyzing...",
 }
 
-func (m *editorCmp) randomizePlaceholders() {
-	m.workingPlaceholder = workingPlaceholders[rand.Intn(len(workingPlaceholders))]
-	m.readyPlaceholder = readyPlaceholders[rand.Intn(len(readyPlaceholders))]
+func (m *enhancedEditorCmp) randomizePlaceholders() {
+	m.workingPlaceholder = enhancedWorkingPlaceholders[rand.Intn(len(enhancedWorkingPlaceholders))]
+	m.readyPlaceholder = enhancedReadyPlaceholders[rand.Intn(len(enhancedReadyPlaceholders))]
 }
 
-func (m *editorCmp) View() string {
+func (m *enhancedEditorCmp) View() string {
 	t := styles.CurrentTheme()
-	// Update placeholder
+	
+	// Update placeholder with more descriptive text
 	if m.app.CoderAgent != nil && m.app.CoderAgent.IsBusy() {
 		m.textarea.Placeholder = m.workingPlaceholder
 	} else {
 		m.textarea.Placeholder = m.readyPlaceholder
 	}
 	if m.app.Permissions.SkipRequests() {
-		m.textarea.Placeholder = "Yolo mode!"
+		m.textarea.Placeholder = "Yolo mode enabled!"
 	}
 	
-	// Base styling with border handling according to UI/UX specification
+	// Enhanced styling with border and background
 	baseStyle := t.S().Base
+	
+	// Add subtle border to editor
+	editorStyle := baseStyle.
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(t.Border).
+		Background(t.BgBaseLighter)
+	
+	if m.enhancedMode {
+		// Enhanced mode: Add gradient border
+		editorStyle = editorStyle.
+			BorderForeground(t.Primary).
+			Background(t.BgBase)
+	}
+	
 	if len(m.attachments) == 0 {
 		// No attachments: 1 unit padding all around
-		content := baseStyle.Padding(1).Render(m.textarea.View())
+		content := editorStyle.Padding(1).Render(m.textarea.View())
 		return content
 	}
 	
 	// With attachments: 1 unit top/bottom padding, 1 unit left/right padding
-	content := baseStyle.Padding(0, 1, 1, 1).Render(
+	content := editorStyle.Padding(0, 1, 1, 1).Render(
 		lipgloss.JoinVertical(lipgloss.Top,
 			m.attachmentsContent(),
 			m.textarea.View(),
@@ -448,33 +448,47 @@ func (m *editorCmp) View() string {
 	return content
 }
 
-func (m *editorCmp) SetSize(width, height int) tea.Cmd {
+func (m *enhancedEditorCmp) SetSize(width, height int) tea.Cmd {
 	m.width = width
 	m.height = height
-	m.textarea.SetWidth(width - 2)   // adjust for padding
-	m.textarea.SetHeight(height - 2) // adjust for padding
+	m.textarea.SetWidth(width - 4)   // adjust for padding and borders
+	m.textarea.SetHeight(height - 4) // adjust for padding and borders
 	return nil
 }
 
-func (m *editorCmp) GetSize() (int, int) {
+func (m *enhancedEditorCmp) GetSize() (int, int) {
 	return m.textarea.Width(), m.textarea.Height()
 }
 
-func (m *editorCmp) attachmentsContent() string {
+func (m *enhancedEditorCmp) attachmentsContent() string {
 	var styledAttachments []string
 	t := styles.CurrentTheme()
 	
-	// Badges: Small rectangular badges with DocumentIcon according to UI/UX specification
-	// Background: FgMuted with FgBase text
+	// Enhanced attachment styling with better visual design
 	attachmentStyles := t.S().Base.
 		MarginLeft(1).
+		Padding(0, 1).
 		Background(t.FgMuted).
-		Foreground(t.FgBase)
+		Foreground(t.FgBase).
+		Bold(true)
 		
+	// Add rounded corners for enhanced look
+	attachmentStyles = attachmentStyles.
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(t.FgSubtle)
+	
+	// Animate if adding attachments
+	if m.isAnimating {
+		// Add pulsing effect during animation
+		animationIntensity := float64(m.attachmentAnimationStep) / 10.0
+		attachmentStyles = attachmentStyles.
+			Background(styles.Lighten(t.FgMuted, animationIntensity*30))
+	}
+	
 	for i, attachment := range m.attachments {
 		var filename string
-		if len(attachment.FileName) > 10 {
-			filename = fmt.Sprintf(" %s %s...", styles.DocumentIcon, attachment.FileName[0:7])
+		if len(attachment.FileName) > 15 {
+			filename = fmt.Sprintf(" %s %s...", styles.DocumentIcon, attachment.FileName[0:12])
 		} else {
 			filename = fmt.Sprintf(" %s %s", styles.DocumentIcon, attachment.FileName)
 		}
@@ -485,17 +499,22 @@ func (m *editorCmp) attachmentsContent() string {
 		}
 		styledAttachments = append(styledAttachments, attachmentStyles.Render(filename))
 	}
-	content := lipgloss.JoinHorizontal(lipgloss.Left, styledAttachments...)
-	return content
+	
+	// Add subtle shadow effect for attachments
+	attachmentContainer := t.S().Base.
+		Padding(0, 0, 1, 0).
+		Render(lipgloss.JoinHorizontal(lipgloss.Left, styledAttachments...))
+		
+	return attachmentContainer
 }
 
-func (m *editorCmp) SetPosition(x, y int) tea.Cmd {
+func (m *enhancedEditorCmp) SetPosition(x, y int) tea.Cmd {
 	m.x = x
 	m.y = y
 	return nil
 }
 
-func (m *editorCmp) startCompletions() tea.Msg {
+func (m *enhancedEditorCmp) startCompletions() tea.Msg {
 	files, _, _ := fsext.ListDirectory(".", nil, 0)
 	slices.Sort(files)
 	completionItems := make([]completions.Completion, 0, len(files))
@@ -518,100 +537,80 @@ func (m *editorCmp) startCompletions() tea.Msg {
 }
 
 // Blur implements Container.
-func (c *editorCmp) Blur() tea.Cmd {
+func (c *enhancedEditorCmp) Blur() tea.Cmd {
 	c.textarea.Blur()
 	return nil
 }
 
 // Focus implements Container.
-func (c *editorCmp) Focus() tea.Cmd {
+func (c *enhancedEditorCmp) Focus() tea.Cmd {
 	return c.textarea.Focus()
 }
 
 // IsFocused implements Container.
-func (c *editorCmp) IsFocused() bool {
+func (c *enhancedEditorCmp) IsFocused() bool {
 	return c.textarea.Focused()
 }
 
 // Bindings implements Container.
-func (c *editorCmp) Bindings() []key.Binding {
+func (c *enhancedEditorCmp) Bindings() []key.Binding {
 	return c.keyMap.KeyBindings()
 }
 
 // TODO: most likely we do not need to have the session here
 // we need to move some functionality to the page level
-func (c *editorCmp) SetSession(session session.Session) tea.Cmd {
+func (c *enhancedEditorCmp) SetSession(session session.Session) tea.Cmd {
 	c.session = session
 	return nil
 }
 
-func (c *editorCmp) IsCompletionsOpen() bool {
+func (c *enhancedEditorCmp) IsCompletionsOpen() bool {
 	return c.isCompletionsOpen
 }
 
-func (c *editorCmp) HasAttachments() bool {
+func (c *enhancedEditorCmp) HasAttachments() bool {
 	return len(c.attachments) > 0
 }
 
-func normalPromptFunc(info textarea.PromptInfo) string {
+// Enhanced interface methods
+
+func (c *enhancedEditorCmp) ToggleEnhancedMode() tea.Cmd {
+	c.enhancedMode = !c.enhancedMode
+	return nil
+}
+
+func (c *enhancedEditorCmp) IsEnhancedMode() bool {
+	return c.enhancedMode
+}
+
+func enhancedNormalPromptFunc(info textarea.PromptInfo) string {
 	t := styles.CurrentTheme()
 	if info.LineNumber == 0 {
 		return "  > "
 	}
-	// Subtle border when focused according to UI/UX specification
+	// Enhanced styling with better visual design
 	if info.Focused {
-		return t.S().Base.Foreground(t.GreenDark).Render("::: ")
+		return t.S().Base.Foreground(t.GreenDark).Bold(true).Render("::: ")
 	}
 	return t.S().Muted.Render("::: ")
 }
 
-func yoloPromptFunc(info textarea.PromptInfo) string {
+func enhancedYoloPromptFunc(info textarea.PromptInfo) string {
 	t := styles.CurrentTheme()
 	if info.LineNumber == 0 {
 		// Special YoloIcon with Mustard background according to UI/UX specification
+		// Enhanced with better visual styling
 		if info.Focused {
-			return fmt.Sprintf("%s ", t.YoloIconFocused)
+			return fmt.Sprintf("%s ", t.YoloIconFocused.Bold(true))
 		} else {
 			return fmt.Sprintf("%s ", t.YoloIconBlurred)
 		}
 	}
 	// Animated dots in Zest color according to UI/UX specification
+	// Enhanced with better animation
 	if info.Focused {
-		return fmt.Sprintf("%s ", t.YoloDotsFocused)
+		return fmt.Sprintf("%s ", t.YoloDotsFocused.Bold(true))
 	}
 	return fmt.Sprintf("%s ", t.YoloDotsBlurred)
 }
 
-func New(app *app.App) Editor {
-	t := styles.CurrentTheme()
-	ta := textarea.New()
-	ta.SetStyles(t.S().TextArea)
-	ta.ShowLineNumbers = false
-	ta.CharLimit = -1
-	ta.SetVirtualCursor(false)
-	ta.Focus()
-	e := &editorCmp{
-		// TODO: remove the app instance from here
-		app:      app,
-		textarea: ta,
-		keyMap:   DefaultEditorKeyMap(),
-	}
-	e.setEditorPrompt()
-
-	e.randomizePlaceholders()
-	e.textarea.Placeholder = e.readyPlaceholder
-
-	return e
-}
-
-func NewEnhanced(app *app.App) EnhancedEditor {
-	// This is a placeholder that refers to the enhanced implementation
-	// The actual implementation is in enhanced.go
-	return nil
-}
-
-// NewFloss creates a new FLOSS-styled editor
-func NewFloss(app *app.App) Editor {
-	// This function is implemented in floss.go
-	return nil
-}

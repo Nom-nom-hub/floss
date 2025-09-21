@@ -7,8 +7,8 @@ import (
 
 	"github.com/nom-nom-hub/floss/internal/config"
 	"github.com/nom-nom-hub/floss/internal/llm/agent"
-	"github.com/nom-nom-hub/floss/internal/tui/components/core"
 	"github.com/nom-nom-hub/floss/internal/tui/styles"
+	"github.com/nom-nom-hub/floss/internal/tui/util/section"
 )
 
 // RenderOptions contains options for rendering MCP lists.
@@ -83,8 +83,8 @@ func RenderMCPList(opts RenderOptions) []string {
 		}
 
 		mcpList = append(mcpList,
-			core.Status(
-				core.StatusOpts{
+			section.Status(
+				section.StatusOpts{
 					Icon:         icon.String(),
 					Title:        l.Name,
 					Description:  description,

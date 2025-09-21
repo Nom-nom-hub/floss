@@ -14,11 +14,11 @@ import (
 	"github.com/charmbracelet/lipgloss/v2"
 	"github.com/nom-nom-hub/floss/internal/home"
 	"github.com/nom-nom-hub/floss/internal/message"
-	"github.com/nom-nom-hub/floss/internal/tui/components/core"
 	"github.com/nom-nom-hub/floss/internal/tui/components/dialogs"
 	"github.com/nom-nom-hub/floss/internal/tui/components/image"
 	"github.com/nom-nom-hub/floss/internal/tui/styles"
 	"github.com/nom-nom-hub/floss/internal/tui/util"
+	"github.com/nom-nom-hub/floss/internal/tui/util/section"
 )
 
 const (
@@ -162,7 +162,7 @@ func (m *model) View() string {
 	t := styles.CurrentTheme()
 
 	strs := []string{
-		t.S().Base.Padding(0, 1, 1, 1).Render(core.Title("Add Image", m.width-4)),
+		t.S().Base.Padding(0, 1, 1, 1).Render(section.Title("Add Image", m.width-4)),
 	}
 
 	// hide image preview if the terminal is too small

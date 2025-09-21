@@ -10,8 +10,8 @@ import (
 	"github.com/nom-nom-hub/floss/internal/config"
 	"github.com/nom-nom-hub/floss/internal/csync"
 	"github.com/nom-nom-hub/floss/internal/lsp"
-	"github.com/nom-nom-hub/floss/internal/tui/components/core"
 	"github.com/nom-nom-hub/floss/internal/tui/styles"
+	"github.com/nom-nom-hub/floss/internal/tui/util/section"
 )
 
 // RenderOptions contains options for rendering LSP lists.
@@ -119,8 +119,8 @@ func RenderLSPList(lspClients *csync.Map[string, *lsp.Client], opts RenderOption
 		}
 
 		lspList = append(lspList,
-			core.Status(
-				core.StatusOpts{
+			section.Status(
+				section.StatusOpts{
 					Icon:         icon.String(),
 					Title:        l.Name,
 					Description:  description,

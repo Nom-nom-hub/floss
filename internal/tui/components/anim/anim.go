@@ -19,25 +19,27 @@ import (
 )
 
 const (
-	fps           = 20
+	fps           = 30  // Increased FPS for smoother animations according to UI/UX specification
 	initialChar   = '.'
 	labelGap      = " "
 	labelGapWidth = 1
 
 	// Periods of ellipsis animation speed in steps.
 	//
-	// If the FPS is 20 (50 milliseconds) this means that the ellipsis will
-	// change every 8 frames (400 milliseconds).
-	ellipsisAnimSpeed = 8
+	// If the FPS is 30 (33 milliseconds) this means that the ellipsis will
+	// change every 5 frames (165 milliseconds) for smoother transitions.
+	ellipsisAnimSpeed = 5
 
 	// The maximum amount of time that can pass before a character appears.
 	// This is used to create a staggered entrance effect.
-	maxBirthOffset = time.Second
+	// Reduced for more responsive animations according to UI/UX specification.
+	maxBirthOffset = 500 * time.Millisecond
 
 	// Number of frames to prerender for the animation. After this number
 	// of frames, the animation will loop. This only applies when color
 	// cycling is disabled.
-	prerenderedFrames = 10
+	// Reduced for better performance according to UI/UX specification.
+	prerenderedFrames = 5
 
 	// Default number of cycling chars.
 	defaultNumCyclingChars = 10
@@ -95,6 +97,34 @@ type Settings struct {
 	GradColorB  color.Color
 	CycleColors bool
 }
+
+// EnhancedSettings defines enhanced settings for the animation with more options.
+type EnhancedSettings struct {
+	Size        int
+	Label       string
+	LabelColor  color.Color
+	GradColorA  color.Color
+	GradColorB  color.Color
+	CycleColors bool
+	// New enhanced options
+	AnimationType  AnimationType
+	Speed          int // 1-10, with 10 being fastest
+	PulseIntensity float64 // 0.0-1.0 for pulse effect intensity
+}
+
+// AnimationType represents different types of animations
+type AnimationType int
+
+const (
+	// Standard cycling animation
+	Standard AnimationType = iota
+	// Pulse animation with intensity variations
+	Pulse
+	// Wave animation with sequential character lighting
+	Wave
+	// Bounce animation with characters moving up and down
+	Bounce
+)
 
 // Default settings.
 const ()

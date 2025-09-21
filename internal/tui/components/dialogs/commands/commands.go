@@ -12,11 +12,11 @@ import (
 	"github.com/nom-nom-hub/floss/internal/config"
 	"github.com/nom-nom-hub/floss/internal/llm/prompt"
 	"github.com/nom-nom-hub/floss/internal/tui/components/chat"
-	"github.com/nom-nom-hub/floss/internal/tui/components/core"
 	"github.com/nom-nom-hub/floss/internal/tui/components/dialogs"
 	"github.com/nom-nom-hub/floss/internal/tui/exp/list"
 	"github.com/nom-nom-hub/floss/internal/tui/styles"
 	"github.com/nom-nom-hub/floss/internal/tui/util"
+	"github.com/nom-nom-hub/floss/internal/tui/util/section"
 )
 
 const (
@@ -163,9 +163,9 @@ func (c *commandDialogCmp) View() string {
 	listView := c.commandList
 	radio := c.commandTypeRadio()
 
-	header := t.S().Base.Padding(0, 1, 1, 1).Render(core.Title("Commands", c.width-lipgloss.Width(radio)-5) + " " + radio)
+	header := t.S().Base.Padding(0, 1, 1, 1).Render(section.Title("Commands", c.width-lipgloss.Width(radio)-5) + " " + radio)
 	if len(c.userCommands) == 0 {
-		header = t.S().Base.Padding(0, 1, 1, 1).Render(core.Title("Commands", c.width-4))
+		header = t.S().Base.Padding(0, 1, 1, 1).Render(section.Title("Commands", c.width-4))
 	}
 	content := lipgloss.JoinVertical(
 		lipgloss.Left,

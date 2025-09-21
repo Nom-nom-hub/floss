@@ -188,7 +188,7 @@ func (t *Theme) buildStyles() *Styles {
 				Base:             base,
 				Text:             base,
 				LineNumber:       base.Foreground(t.FgSubtle),
-				CursorLine:       base,
+				CursorLine:       base.Background(ParseHex("#221f30")), // Warmed Charcoal background
 				CursorLineNumber: base.Foreground(t.FgSubtle),
 				Placeholder:      base.Foreground(t.FgSubtle),
 				Prompt:           base.Foreground(t.Tertiary),
@@ -229,7 +229,7 @@ func (t *Theme) buildStyles() *Styles {
 			Heading: ansi.StyleBlock{
 				StylePrimitive: ansi.StylePrimitive{
 					BlockSuffix: "\n",
-					Color:       stringPtr(charmtone.Malibu.Hex()),
+					Color:       stringPtr(charmtone.Guac.Hex()), // Changed from Malibu to Guac
 					Bold:        boolPtr(true),
 				},
 			},
@@ -313,7 +313,7 @@ func (t *Theme) buildStyles() *Styles {
 				StylePrimitive: ansi.StylePrimitive{
 					Prefix:          " ",
 					Suffix:          " ",
-					Color:           stringPtr(charmtone.Coral.Hex()),
+					Color:           stringPtr(charmtone.Citron.Hex()), // Changed from Coral to Citron
 					BackgroundColor: stringPtr(charmtone.Charcoal.Hex()),
 				},
 			},
@@ -476,12 +476,12 @@ func (t *Theme) buildStyles() *Styles {
 			DisabledCursor:   base.Foreground(t.FgMuted),
 			Cursor:           base.Foreground(t.FgBase),
 			Symlink:          base.Foreground(t.FgSubtle),
-			Directory:        base.Foreground(t.Primary),
+			Directory:        base.Foreground(t.Primary), // Citron for directories in FLOSS
 			File:             base.Foreground(t.FgBase),
 			DisabledFile:     base.Foreground(t.FgMuted),
 			DisabledSelected: base.Background(t.BgOverlay).Foreground(t.FgMuted),
 			Permission:       base.Foreground(t.FgMuted),
-			Selected:         base.Background(t.Primary).Foreground(t.FgBase),
+			Selected:         base.Background(t.Primary).Foreground(t.FgBase), // Citron background for selection
 			FileSize:         base.Foreground(t.FgMuted),
 			EmptyDirectory:   base.Foreground(t.FgMuted).PaddingLeft(2).SetString("Empty directory"),
 		},

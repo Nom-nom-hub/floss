@@ -7,9 +7,9 @@ import (
 	"github.com/charmbracelet/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 	"github.com/google/uuid"
-	"github.com/nom-nom-hub/floss/internal/tui/components/core"
 	"github.com/nom-nom-hub/floss/internal/tui/components/core/layout"
 	"github.com/nom-nom-hub/floss/internal/tui/styles"
+	"github.com/nom-nom-hub/floss/internal/tui/util/section"
 	"github.com/rivo/uniseg"
 )
 
@@ -360,14 +360,14 @@ func (m *itemSectionModel) View() string {
 		style = style.Padding(0, 1, 0, 1)
 	}
 	title = t.S().Muted.Render(title)
-	section := ""
+	sectionStr := ""
 	if m.info != "" {
-		section = core.SectionWithInfo(title, m.width-2, m.info)
+		sectionStr = section.SectionWithInfo(title, m.width-2, m.info)
 	} else {
-		section = core.Section(title, m.width-2)
+		sectionStr = section.Section(title, m.width-2)
 	}
 
-	return style.Render(section)
+	return style.Render(sectionStr)
 }
 
 func (m *itemSectionModel) GetSize() (int, int) {

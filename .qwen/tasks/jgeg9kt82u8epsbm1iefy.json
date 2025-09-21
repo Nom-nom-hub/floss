@@ -1,9 +1,0 @@
-{
-  "id": "jgeg9kt82u8epsbm1iefy",
-  "title": "Update Application Codebase",
-  "description": "Rename Crush references to Floss throughout the codebase and implement the new UI design while maintaining all existing functionality",
-  "dependencies": [],
-  "status": "pending",
-  "createdAt": "2025-09-21T06:40:41.498Z",
-  "updatedAt": "2025-09-21T06:40:41.498Z"
-}

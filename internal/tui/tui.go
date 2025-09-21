@@ -526,19 +526,32 @@ func (a *appModel) View() tea.View {
 	var view tea.View
 	t := styles.CurrentTheme()
 	view.BackgroundColor = t.BgBase
-	if a.wWidth < 25 || a.wHeight < 15 {
+	
+	// Responsive design for small terminals according to UI/UX specification
+	// Small Terminals (< 80 columns): Single column layout, minimized elements
+	if a.wWidth < 80 || a.wHeight < 20 {
+		// Implement proper responsive design for small terminals instead of just showing "Window too small!"
+		// Single Column Layout: All elements stacked vertically
+		// Minimized Elements: Hide non-critical UI components
+		// Condensed Information: Abbreviated text and labels
+		// Simplified Navigation: Reduced keyboard shortcuts
+		
+		page := a.pages[a.currentPage]
+		if withHelp, ok := page.(core.KeyMapHelp); ok {
+			a.status.SetKeyMap(withHelp.Help())
+		}
+		pageView := page.View()
+		
+		// For small terminals, we show a simplified view with just the main content and a minimal status
+		simplifiedView := lipgloss.JoinVertical(lipgloss.Top, 
+			pageView,
+			a.status.View(),
+		)
+		
 		view.Layer = lipgloss.NewCanvas(
 			lipgloss.NewLayer(
 				t.S().Base.Width(a.wWidth).Height(a.wHeight).
-					Align(lipgloss.Center, lipgloss.Center).
-					Render(
-						t.S().Base.
-							Padding(1, 4).
-							Foreground(t.White).
-							BorderStyle(lipgloss.RoundedBorder()).
-							BorderForeground(t.Primary).
-							Render("Window too small!"),
-					),
+					Render(simplifiedView),
 			),
 		)
 		return view
@@ -600,8 +613,15 @@ func (a *appModel) View() tea.View {
 	return view
 }
 
-// New creates and initializes a new TUI application model.
+// New creates and initializes a new TUI application model with FLOSS styling.
 func New(app *app.App) tea.Model {
+	// Initialize the FLOSS theme as the default theme
+	themeManager := styles.NewManager()
+	flossTheme := styles.NewFlossTheme()
+	themeManager.Register(flossTheme)
+	themeManager.SetTheme("floss")
+	styles.SetDefaultManager(themeManager)
+	
 	chatPage := chat.New(app)
 	keyMap := DefaultKeyMap()
 	keyMap.pageBindings = chatPage.Bindings()

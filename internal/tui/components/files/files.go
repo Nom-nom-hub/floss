@@ -13,8 +13,8 @@ import (
 	"github.com/nom-nom-hub/floss/internal/config"
 	"github.com/nom-nom-hub/floss/internal/fsext"
 	"github.com/nom-nom-hub/floss/internal/history"
-	"github.com/nom-nom-hub/floss/internal/tui/components/core"
 	"github.com/nom-nom-hub/floss/internal/tui/styles"
+	"github.com/nom-nom-hub/floss/internal/tui/util/section"
 )
 
 // FileHistory represents a file history with initial and latest versions.
@@ -99,8 +99,8 @@ func RenderFileList(fileSlice []SessionFile, opts RenderOptions) []string {
 		filePath = ansi.Truncate(filePath, opts.MaxWidth-lipgloss.Width(extraContent)-2, "…")
 
 		fileList = append(fileList,
-			core.Status(
-				core.StatusOpts{
+			section.Status(
+				section.StatusOpts{
 					Title:        filePath,
 					ExtraContent: extraContent,
 				},
