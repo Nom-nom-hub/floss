@@ -1,24 +1,20 @@
 # Floss
 
 <p align="center">
-    <a href="https://stuff.charm.sh/crush/charm-crush.png"><img width="450" alt="Charm Floss Logo" src="https://github.com/user-attachments/assets/adc1a6f4-b284-4603-836c-59038caa2e8b" /></a><br />
-    <a href="https://github.com/nom-nom-hub/floss/releases"><img src="https://img.shields.io/github/release/charmbracelet/crush" alt="Latest Release"></a>
+    <a href="https://github.com/nom-nom-hub/floss/releases"><img src="https://img.shields.io/github/release/nom-nom-hub/floss" alt="Latest Release"></a>
     <a href="https://github.com/nom-nom-hub/floss/actions"><img src="https://github.com/nom-nom-hub/floss/actions/workflows/build.yml/badge.svg" alt="Build Status"></a>
 </p>
 
 <p align="center">Your new coding bestie, now available in your favourite terminal.<br />Your tools, your code, and your workflows, wired into your LLM of choice.</p>
-<p align="center">你的新编程伙伴，现在就在你最爱的终端中。<br />你的工具、代码和工作流，都与您选择的 LLM 模型紧密相连。</p>
-
-<p align="center"><img width="800" alt="Floss Demo" src="https://github.com/user-attachments/assets/58280caf-851b-470a-b6f7-d5c4ea8a1968" /></p>
 
 ## Features
 
-- **Multi-Model:** choose from a wide range of LLMs or add your own via OpenAI- or Anthropic-compatible APIs
-- **Flexible:** switch LLMs mid-session while preserving context
-- **Session-Based:** maintain multiple work sessions and contexts per project
+- **Multi-Model:** Choose from a wide range of LLMs or add your own via OpenAI- or Anthropic-compatible APIs
+- **Flexible:** Switch LLMs mid-session while preserving context
+- **Session-Based:** Maintain multiple work sessions and contexts per project
 - **LSP-Enhanced:** Floss uses LSPs for additional context, just like you do
-- **Extensible:** add capabilities via MCPs (`http`, `stdio`, and `sse`)
-- **Works Everywhere:** first-class support in every terminal on macOS, Linux, Windows (PowerShell and WSL), FreeBSD, OpenBSD, and NetBSD
+- **Extensible:** Add capabilities via MCPs (`http`, `stdio`, and `sse`)
+- **Works Everywhere:** First-class support in every terminal on macOS, Linux, Windows (PowerShell and WSL), FreeBSD, OpenBSD, and NetBSD
 
 ## Installation
 
@@ -26,10 +22,10 @@ Use a package manager:
 
 ```bash
 # Homebrew
-brew install charmbracelet/tap/floss
+brew install nom-nom-hub/tap/floss
 
 # NPM
-npm install -g @charmland/floss
+npm install -g @nom-nom-hub/floss
 
 # Arch Linux (btw)
 yay -S floss-bin
@@ -42,93 +38,20 @@ Windows users:
 
 ```bash
 # Winget
-winget install charmbracelet.floss
+winget install nom-nom-hub.floss
 
 # Scoop
-scoop bucket add charm https://github.com/charmbracelet/scoop-bucket.git
+scoop bucket add floss https://github.com/nom-nom-hub/scoop-bucket.git
 scoop install floss
 ```
-
-<details>
-<summary><strong>Nix (NUR)</strong></summary>
-
-Floss is available via [NUR](https://github.com/nix-community/NUR) in `nur.repos.charmbracelet.floss`.
-
-You can also try out Floss via `nix-shell`:
-
-```bash
-# Add the NUR channel.
-nix-channel --add https://github.com/nix-community/NUR/archive/main.tar.gz nur
-nix-channel --update
-
-# Get Floss in a Nix shell.
-nix-shell -p '(import <nur> { pkgs = import <nixpkgs> {}; }).repos.charmbracelet.floss'
-```
-
-### NixOS & Home Manager Module Usage via NUR
-
-Floss provides NixOS and Home Manager modules via NUR.
-You can use these modules directly in your flake by importing them from NUR. Since it auto detects whether its a home manager or nixos context you can use the import the exact same way :)
-
-```nix
-{
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nur.url = "github:nix-community/NUR";
-  };
-
-  outputs = { self, nixpkgs, nur, ... }: {
-    nixosConfigurations.your-hostname = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        nur.modules.nixos.default
-        nur.repos.charmbracelet.modules.floss
-        {
-          programs.floss = {
-            enable = true;
-            settings = {
-              providers = {
-                openai = {
-                  id = "openai";
-                  name = "OpenAI";
-                  base_url = "https://api.openai.com/v1";
-                  type = "openai";
-                  api_key = "sk-fake123456789abcdef...";
-                  models = [
-                    {
-                      id = "gpt-4";
-                      name = "GPT-4";
-                    }
-                  ];
-                };
-              };
-              lsp = {
-                go = { command = "gopls"; enabled = true; };
-                nix = { command = "nil"; enabled = true; }
-              };
-              options = {
-                context_paths = [ "/etc/nixos/configuration.nix" ];
-                tui = { compact_mode = true; };
-                debug = false;
-              };
-            };
-          };
-        }
-      ];
-    };
-  };
-}
-```
-
-</details>
 
 <details>
 <summary><strong>Debian/Ubuntu</strong></summary>
 
 ```bash
 sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
-echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
+curl -fsSL https://repo.nom-nom-hub.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/floss.gpg
+echo "deb [signed-by=/etc/apt/keyrings/floss.gpg] https://repo.nom-nom-hub.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/floss.list
 sudo apt update && sudo apt install floss
 ```
 
@@ -138,12 +61,12 @@ sudo apt update && sudo apt install floss
 <summary><strong>Fedora/RHEL</strong></summary>
 
 ```bash
-echo '[charm]
-name=Charm
-baseurl=https://repo.charm.sh/yum/
+echo '[floss]
+name=Floss
+baseurl=https://repo.nom-nom-hub.sh/yum/
 enabled=1
 gpgcheck=1
-gpgkey=https://repo.charm.sh/yum/gpg.key' | sudo tee /etc/yum.repos.d/charm.repo
+gpgkey=https://repo.nom-nom-hub.sh/yum/gpg.key' | sudo tee /etc/yum.repos.d/floss.repo
 sudo yum install floss
 ```
 
@@ -158,14 +81,9 @@ Or, download it:
 
 Or just install it with Go:
 
-```
+```bash
 go install github.com/nom-nom-hub/floss@latest
 ```
-
-> [!WARNING]
-> Productivity may increase when using Floss and you may find yourself nerd
-> sniped when first using the application. If the symptoms persist, join the
-> [Discord][discord] and nerd snipe the rest of us.
 
 ## Getting Started
 
@@ -197,8 +115,6 @@ That said, you can also set environment variables for preferred providers.
 Is there a provider you'd like to see in Floss? Is there an existing model that needs an update?
 
 Floss's default model listing is managed in [Catwalk](https://github.com/charmbracelet/catwalk), a community-supported, open source repository of Floss-compatible models, and you're welcome to contribute.
-
-<a href="https://github.com/charmbracelet/catwalk"><img width="174" height="174" alt="Catwalk Badge" src="https://github.com/user-attachments/assets/95b49515-fe82-4409-b10d-5beb0873787d" /></a>
 
 ## Configuration
 
@@ -236,7 +152,7 @@ like you would. LSPs can be added manually like so:
 
 ```json
 {
-  "$schema": "https://charm.land/floss.json",
+  "$schema": "https://nom-nom-hub.land/floss.json",
   "lsp": {
     "go": {
       "command": "gopls",
@@ -264,7 +180,7 @@ using `$(echo $VAR)` syntax.
 
 ```json
 {
-  "$schema": "https://charm.land/floss.json",
+  "$schema": "https://nom-nom-hub.land/floss.json",
   "mcp": {
     "filesystem": {
       "type": "stdio",
@@ -310,7 +226,7 @@ permissions. Use this with care.
 
 ```json
 {
-  "$schema": "https://charm.land/floss.json",
+  "$schema": "https://nom-nom-hub.land/floss.json",
   "permissions": {
     "allowed_tools": [
       "view",
@@ -333,7 +249,7 @@ it creates. You can customize this behavior with the `attribution` option:
 
 ```json
 {
-  "$schema": "https://charm.land/floss.json",
+  "$schema": "https://nom-nom-hub.land/floss.json",
   "options": {
     "attribution": {
       "co_authored_by": true,
@@ -343,7 +259,7 @@ it creates. You can customize this behavior with the `attribution` option:
 }
 ```
 
-- `co_authored_by`: When true (default), adds `Co-Authored-By: Floss <floss@charm.land>` to commit messages
+- `co_authored_by`: When true (default), adds `Co-Authored-By: Floss <floss@nom-nom-hub.land>` to commit messages
 - `generated_with`: When true (default), adds `💘 Generated with Floss` line to commit messages and PR descriptions
 
 ### Local Models
@@ -406,7 +322,7 @@ API. Don't forget to set `DEEPSEEK_API_KEY` in your environment.
 
 ```json
 {
-  "$schema": "https://charm.land/floss.json",
+  "$schema": "https://nom-nom-hub.land/floss.json",
   "providers": {
     "deepseek": {
       "type": "openai",
@@ -435,7 +351,7 @@ Custom Anthropic-compatible providers follow this format:
 
 ```json
 {
-  "$schema": "https://charm.land/floss.json",
+  "$schema": "https://nom-nom-hub.land/floss.json",
   "providers": {
     "custom-anthropic": {
       "type": "anthropic",
@@ -483,7 +399,7 @@ To add specific models to the configuration, configure as such:
 
 ```json
 {
-  "$schema": "https://charm.land/floss.json",
+  "$schema": "https://nom-nom-hub.land/floss.json",
   "providers": {
     "vertexai": {
       "models": [
@@ -528,7 +444,7 @@ config:
 
 ```json
 {
-  "$schema": "https://charm.land/floss.json",
+  "$schema": "https://nom-nom-hub.land/floss.json",
   "options": {
     "debug": true,
     "debug_lsp": true
@@ -553,7 +469,7 @@ your `floss.json` config:
 
 ```json
 {
-  "$schema": "https://charm.land/floss.json",
+  "$schema": "https://nom-nom-hub.land/floss.json",
   "options": {
     "disable_provider_auto_update": true
   }
@@ -588,42 +504,20 @@ floss update-providers embedded
 floss update-providers --help
 ```
 
-## A Note on Claude Max and GitHub Copilot
+## FLOSS Branding
 
-Floss only supports model providers through official, compliant APIs. We do not
-support or endorse any methods that rely on personal Claude Max and GitHub
-Copilot accounts or OAuth workarounds, which violate Anthropic and
-Microsoft's Terms of Service.
+This version of Floss has been customized with a distinctive branding
+instead of the original branding. All visual elements, color schemes,
+and UI components have been updated to create a unique identity while
+maintaining full compatibility with the core Floss functionality.
 
-We're committed to building sustainable, trusted integrations with model
-providers. If you're a provider interested in working with us,
-[reach out](mailto:vt100@charm.sh).
+The application header has been updated to display "TECK" instead of "Charm",
+and the version has been set to a clean "1.0.0" for a professional appearance.
 
 ## Contributing
 
 See the [contributing guide](https://github.com/nom-nom-hub/floss?tab=contributing-ov-file#contributing).
 
-## Whatcha think?
-
-We'd love to hear your thoughts on this project. Need help? We gotchu. You can find us on:
-
-- [Twitter](https://twitter.com/charmcli)
-- [Discord][discord]
-- [Slack](https://charm.land/slack)
-- [The Fediverse](https://mastodon.social/@charmcli)
-- [Bluesky](https://bsky.app/profile/charm.land)
-
-[discord]: https://charm.land/discord
-
 ## License
 
 [FSL-1.1-MIT](https://github.com/nom-nom-hub/floss/raw/main/LICENSE.md)
-
----
-
-Part of [Charm](https://charm.land).
-
-<a href="https://charm.land/"><img alt="The Charm logo" width="400" src="https://stuff.charm.sh/charm-banner-next.jpg" /></a>
-
-<!--prettier-ignore-->
-Charm热爱开源 • Charm loves open source
