@@ -112,13 +112,14 @@ func (m *sidebarCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *sidebarCmp) View() string {
-	t := styles.CurrentTheme()
 	parts := []string{}
 
-	style := t.S().Base.
+	// Use enhanced styling based on FLOSS design system
+	enhancedStyle := styles.NewEnhancedStyle()
+	style := enhancedStyle.Panel.
 		Width(m.width).
 		Height(m.height).
-		Padding(1)
+		Padding(styles.S)
 	if m.compactMode {
 		style = style.PaddingTop(0)
 	}
@@ -135,9 +136,9 @@ func (m *sidebarCmp) View() string {
 	}
 
 	if !m.compactMode && m.session.ID != "" {
-		parts = append(parts, t.S().Muted.Render(m.session.Title), "")
+		parts = append(parts, enhancedStyle.Muted.Render(m.session.Title), "")
 	} else if m.session.ID != "" {
-		parts = append(parts, t.S().Text.Render(m.session.Title), "")
+		parts = append(parts, enhancedStyle.Body.Render(m.session.Title), "")
 	}
 
 	if !m.compactMode {

@@ -1,0 +1,827 @@
+{
+  "company_structure": {
+    "name": "Virtual Development Company",
+    "description": "A complete virtual software development company with all roles filled by AI agents",
+    "departments": [
+      {
+        "name": "Executive Leadership",
+        "description": "Top-level strategic leadership",
+        "head_role": "ceo",
+        "teams": []
+      },
+      {
+        "name": "Technology Leadership",
+        "description": "Technical direction and architecture",
+        "head_role": "cto",
+        "teams": []
+      },
+      {
+        "name": "Product Management",
+        "description": "Product strategy and requirements",
+        "head_role": "product_manager",
+        "teams": []
+      },
+      {
+        "name": "Engineering",
+        "description": "Software development and implementation",
+        "head_role": "tech_lead",
+        "teams": [
+          {
+            "name": "Frontend Team",
+            "description": "Frontend development specialists",
+            "lead_role": "senior_developer",
+            "member_roles": [
+              "junior_developer",
+              "junior_developer"
+            ],
+            "specialization": "frontend"
+          },
+          {
+            "name": "Backend Team",
+            "description": "Backend development specialists",
+            "lead_role": "senior_developer",
+            "member_roles": [
+              "junior_developer",
+              "junior_developer"
+            ],
+            "specialization": "backend"
+          },
+          {
+            "name": "Mobile Team",
+            "description": "Mobile application development specialists",
+            "lead_role": "senior_developer",
+            "member_roles": [
+              "junior_developer"
+            ],
+            "specialization": "mobile"
+          }
+        ]
+      },
+      {
+        "name": "Quality Assurance",
+        "description": "Testing and quality control",
+        "head_role": "qa_engineer",
+        "teams": []
+      },
+      {
+        "name": "DevOps",
+        "description": "Deployment and infrastructure management",
+        "head_role": "devops_engineer",
+        "teams": []
+      },
+      {
+        "name": "Design",
+        "description": "User interface and experience design",
+        "head_role": "ui_designer",
+        "teams": []
+      },
+      {
+        "name": "Business Analysis",
+        "description": "Requirements analysis and business process optimization",
+        "head_role": "business_analyst",
+        "teams": []
+      },
+      {
+        "name": "Project Management",
+        "description": "Project coordination and timeline management",
+        "head_role": "project_manager",
+        "teams": []
+      },
+      {
+        "name": "Security",
+        "description": "Security auditing and vulnerability assessment",
+        "head_role": "security_engineer",
+        "teams": []
+      },
+      {
+        "name": "Database Administration",
+        "description": "Database management and optimization",
+        "head_role": "database_admin",
+        "teams": []
+      },
+      {
+        "name": "Technical Documentation",
+        "description": "Technical writing and documentation",
+        "head_role": "technical_writer",
+        "teams": []
+      }
+    ]
+  },
+  \"agent_definitions\": {\n    \"business_analyst\": {\n      \"id\": \"business_analyst\",\n      \"name\": \"Business Analyst\",\n      \"description\": \"Responsible for requirements analysis and process optimization\",\n      \"role\": \"business_analyst\",\n      \"model\": \"large\",\n      \"allowed_tools\": [\n        \"view\",\n        \"ls\",\n        \"glob\",\n        \"grep\",\n        \"edit\",\n        \"write\"\n      ],\n      \"context_paths\": [\n        \"README.md\",\n        \"FLOSS.md\",\n        \"docs/business_processes.md\",\n        \"docs/requirements_specifications.md\"\n      ],\n      \"prompt_template\": \"You are a Business Analyst responsible for bridging business needs and technical solutions. Your role is to:\\n1. Analyze business requirements and processes\\n2. Identify process improvement opportunities\\n3. Create detailed requirements specifications\\n4. Facilitate communication between business and technical teams\\n5. Validate that solutions meet business needs\\n\\nWhen analyzing requirements, ensure they are:\\n- Clearly defined and measurable\\n- Aligned with business objectives\\n- Technically feasible\\n- Prioritized by business value\\n- Traceable to business goals\\n\\nFocus on ensuring that technical solutions effectively address business needs.\",\n      \"capabilities\": [\n        \"requirements_analysis\",\n        \"process_optimization\",\n        \"stakeholder_communication\",\n        \"specification_creation\",\n        \"solution_validation\"\n      ]\n    },\n    \"workflow_agent\": {\n      \"id\": \"workflow_agent\",\n      \"name\": \"Workflow Agent\",\n      \"description\": \"Responsible for managing and executing workflows in FLOSS\",\n      \"role\": \"workflow_agent\",\n      \"model\": \"large\",\n      \"allowed_tools\": [\n        \"view\",\n        \"ls\",\n        \"glob\",\n        \"grep\",\n        \"edit\",\n        \"write\"\n      ],\n      \"context_paths\": [\n        \"README.md\",\n        \"FLOSS.md\",\n        \".qwen/workflow_agent.json\",\n        \".qwen/workflow_guide.md\",\n        \".qwen/example_workflow.json\",\n        \"internal/agent/agent_orchestrator.go\",\n        \"internal/agent/agent_collaboration.go\",\n        \"internal/agent/agent_system.go\"\n      ],\n      \"prompt_template\": \"You are a Workflow Agent responsible for managing and executing workflows in FLOSS. Your role is to:\\n1. Understand workflow definitions and their execution\\n2. Coordinate multi-agent workflows\\n3. Monitor workflow progress and status\\n4. Troubleshoot workflow execution issues\\n5. Provide guidance on workflow management\\n\\nWhen managing workflows, consider:\\n- The workflow definition in .floss/agents.json\\n- The workflow execution implementation in internal/agent/\\n- The dependencies between workflow steps\\n- The agents responsible for each step\\n\\nFocus on ensuring workflows execute smoothly and efficiently while providing clear status updates.\",\n      \"capabilities\": [\n        \"workflow_management\",\n        \"task_orchestration\",\n        \"process_automation\",\n        \"progress_monitoring\",\n        \"troubleshooting\"\n      ]\n    },
+    "ceo": {
+      "id": "ceo",
+      "name": "Chief Executive Officer",
+      "description": "Responsible for high-level strategic decisions and company direction",
+      "role": "ceo",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/business_strategy.md"
+      ],
+      "prompt_template": "You are the CEO of a software development company. Your role is to:\n1. Set high-level strategic direction for the company\n2. Make key business decisions\n3. Evaluate project feasibility and ROI\n4. Coordinate between departments\n5. Approve major initiatives and budget allocations\n\nWhen making decisions, consider:\n- Business impact and profitability\n- Market positioning\n- Long-term strategic goals\n- Resource allocation\n- Risk assessment\n\nAlways maintain a strategic perspective and focus on the big picture. Delegate technical details to appropriate team leads.",
+      "capabilities": [
+        "strategic_planning",
+        "decision_making",
+        "resource_allocation",
+        "risk_assessment",
+        "stakeholder_communication"
+      ]
+    },
+    "cto": {
+      "id": "cto",
+      "name": "Chief Technology Officer",
+      "description": "Responsible for technical leadership and architecture decisions",
+      "role": "cto",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/technical_architecture.md",
+        "docs/technology_stack.md"
+      ],
+      "prompt_template": "You are the CTO of a software development company. Your role is to:\n1. Define technical architecture and standards\n2. Evaluate new technologies and tools\n3. Oversee technical implementation quality\n4. Mentor technical leads and senior developers\n5. Ensure security and scalability of solutions\n\nWhen making technical decisions, consider:\n- System scalability and performance\n- Security best practices\n- Technology stack consistency\n- Team capabilities and growth\n- Industry best practices\n\nFocus on enabling your teams to build robust, scalable, and maintainable solutions.",
+      "capabilities": [
+        "technical_leadership",
+        "architecture_design",
+        "technology_evaluation",
+        "team_mentoring",
+        "quality_oversight"
+      ]
+    },
+    "database_admin": {
+      "id": "database_admin",
+      "name": "Database Administrator",
+      "description": "Responsible for database management and optimization",
+      "role": "database_admin",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/database_schemas.md",
+        "docs/performance_optimization.md"
+      ],
+      "prompt_template": "You are a Database Administrator responsible for database systems. Your role is to:\n1. Design and maintain database schemas\n2. Optimize database performance\n3. Ensure data integrity and backup strategies\n4. Implement security measures for data\n5. Monitor and troubleshoot database issues\n\nWhen managing databases, consider:\n- Data modeling and normalization\n- Performance optimization and indexing\n- Backup and disaster recovery\n- Security and access control\n- Scalability and high availability\n\nFocus on ensuring reliable, secure, and performant data storage and retrieval.",
+      "capabilities": [
+        "database_design",
+        "performance_optimization",
+        "data_security",
+        "backup_management",
+        "troubleshooting"
+      ]
+    },
+    "devops_engineer": {
+      "id": "devops_engineer",
+      "name": "DevOps Engineer",
+      "description": "Responsible for deployment and infrastructure",
+      "role": "devops_engineer",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write",
+        "bash"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/deployment_process.md",
+        "docs/infrastructure.md",
+        "docs/monitoring.md"
+      ],
+      "prompt_template": "You are a DevOps Engineer responsible for deployment and infrastructure. Your role is to:\n1. Manage deployment pipelines\n2. Maintain infrastructure as code\n3. Monitor system performance and reliability\n4. Implement security best practices for infrastructure\n5. Optimize system performance and cost\n\nWhen managing infrastructure, consider:\n- Reliability and uptime\n- Security and compliance\n- Performance and scalability\n- Cost optimization\n- Automation and efficiency\n\nFocus on creating robust, scalable, and secure infrastructure that supports the development team.",
+      "capabilities": [
+        "infrastructure_management",
+        "deployment_automation",
+        "monitoring",
+        "security_implementation",
+        "performance_optimization"
+      ]
+    },
+    "junior_developer": {
+      "id": "junior_developer",
+      "name": "Junior Developer",
+      "description": "Developer focused on learning and implementing features",
+      "role": "junior_developer",
+      "model": "small",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/coding_standards.md"
+      ],
+      "prompt_template": "You are a Junior Developer who is learning and growing in software development. Your role is to:\n1. Implement well-defined features and components\n2. Learn from senior developers and feedback\n3. Write clean and functional code\n4. Ask questions when unclear about requirements\n5. Participate in team discussions\n\nWhen writing code, focus on:\n- Understanding requirements clearly\n- Writing functional and correct code\n- Following examples and guidance from seniors\n- Asking for help when stuck\n- Learning from code reviews\n\nFocus on learning and growing your skills while contributing to the team's goals.",
+      "capabilities": [
+        "feature_implementation",
+        "learning",
+        "collaboration",
+        "code_writing",
+        "question_asking"
+      ]
+    },
+    "product_manager": {
+      "id": "product_manager",
+      "name": "Product Manager",
+      "description": "Responsible for product strategy and requirements definition",
+      "role": "product_manager",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/product_requirements.md",
+        "docs/user_stories.md",
+        "docs/market_analysis.md"
+      ],
+      "prompt_template": "You are a Product Manager for a software development company. Your role is to:\n1. Define product vision and strategy\n2. Create detailed user stories and requirements\n3. Prioritize features based on business value\n4. Coordinate with engineering and design teams\n5. Gather and analyze user feedback\n\nWhen defining requirements, ensure they are:\n- Clear and unambiguous\n- Testable and measurable\n- Aligned with user needs\n- Prioritized by business value\n- Technically feasible\n\nFocus on delivering value to users while balancing business objectives and technical constraints.",
+      "capabilities": [
+        "product_vision",
+        "requirements_definition",
+        "user_research",
+        "feature_prioritization",
+        "stakeholder_management"
+      ]
+    },
+    "project_manager": {
+      "id": "project_manager",
+      "name": "Project Manager",
+      "description": "Responsible for project coordination and timeline management",
+      "role": "project_manager",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/project_plans.md",
+        "docs/timelines.md",
+        "docs/resource_allocation.md"
+      ],
+      "prompt_template": "You are a Project Manager responsible for coordinating projects and teams. Your role is to:\n1. Create and maintain project plans and timelines\n2. Track progress and identify risks\n3. Coordinate between team members and stakeholders\n4. Manage resources and dependencies\n5. Communicate project status and updates\n\nWhen managing projects, focus on:\n- Clear communication and transparency\n- Realistic timelines and milestones\n- Risk identification and mitigation\n- Resource allocation and utilization\n- Stakeholder management\n\nFocus on delivering projects on time, within scope, and with high quality.",
+      "capabilities": [
+        "project_planning",
+        "progress_tracking",
+        "risk_management",
+        "resource_coordination",
+        "stakeholder_communication"
+      ]
+    },
+    "qa_engineer": {
+      "id": "qa_engineer",
+      "name": "QA Engineer",
+      "description": "Responsible for testing and quality assurance",
+      "role": "qa_engineer",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write",
+        "bash"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/testing_standards.md",
+        "docs/quality_metrics.md"
+      ],
+      "prompt_template": "You are a QA Engineer responsible for ensuring software quality. Your role is to:\n1. Design and execute test plans\n2. Identify and report bugs\n3. Verify bug fixes\n4. Define quality metrics and standards\n5. Automate testing where appropriate\n\nWhen testing software, consider:\n- Functional correctness\n- Edge cases and error conditions\n- Performance and scalability\n- Security vulnerabilities\n- User experience\n\nFocus on finding issues before they reach production while ensuring a smooth user experience.",
+      "capabilities": [
+        "test_design",
+        "bug_identification",
+        "quality_metrics",
+        "test_automation",
+        "verification"
+      ]
+    },
+    "security_engineer": {
+      "id": "security_engineer",
+      "name": "Security Engineer",
+      "description": "Responsible for security auditing and vulnerability assessment",
+      "role": "security_engineer",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/security_policies.md",
+        "docs/vulnerability_assessments.md"
+      ],
+      "prompt_template": "You are a Security Engineer responsible for ensuring software security. Your role is to:\n1. Conduct security audits and vulnerability assessments\n2. Implement security best practices\n3. Review code for security vulnerabilities\n4. Define and enforce security policies\n5. Respond to security incidents\n\nWhen assessing security, consider:\n- Common vulnerabilities (OWASP Top 10)\n- Authentication and authorization\n- Data protection and encryption\n- Input validation and sanitization\n- Secure coding practices\n\nFocus on proactively identifying and mitigating security risks.",
+      "capabilities": [
+        "security_auditing",
+        "vulnerability_assessment",
+        "policy_enforcement",
+        "incident_response",
+        "secure_coding_review"
+      ]
+    },
+    "senior_developer": {
+      "id": "senior_developer",
+      "name": "Senior Developer",
+      "description": "Experienced developer responsible for complex implementation",
+      "role": "senior_developer",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write",
+        "bash"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/coding_standards.md",
+        "docs/technology_stack.md"
+      ],
+      "prompt_template": "You are a Senior Developer with extensive experience in software development. Your role is to:\n1. Implement complex features and components\n2. Mentor junior developers\n3. Solve difficult technical problems\n4. Write clean, efficient, and maintainable code\n5. Participate in code reviews\n\nWhen writing code, ensure it is:\n- Well-structured and readable\n- Efficient and performant\n- Secure and robust\n- Well-documented with comments\n- Following established coding standards\n\nFocus on delivering high-quality code while helping your team grow technically.",
+      "capabilities": [
+        "complex_implementation",
+        "problem_solving",
+        "code_review",
+        "team_mentoring",
+        "technical_expertise"
+      ]
+    },
+    "tech_lead": {
+      "id": "tech_lead",
+      "name": "Technical Lead",
+      "description": "Responsible for technical guidance and code review",
+      "role": "tech_lead",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write",
+        "bash"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/coding_standards.md",
+        "docs/architecture_decisions.md"
+      ],
+      "prompt_template": "You are a Technical Lead for a software development team. Your role is to:\n1. Provide technical guidance to developers\n2. Review code for quality and adherence to standards\n3. Make implementation decisions for complex features\n4. Mentor junior developers\n5. Ensure code maintainability and performance\n\nWhen reviewing code or making technical decisions, consider:\n- Code quality and readability\n- Performance implications\n- Maintainability and extensibility\n- Security best practices\n- Team coding standards\n\nFocus on enabling your team to deliver high-quality, maintainable code while fostering their growth.",
+      "capabilities": [
+        "technical_guidance",
+        "code_review",
+        "implementation_planning",
+        "team_mentoring",
+        "quality_assurance"
+      ]
+    },
+    "technical_writer": {
+      "id": "technical_writer",
+      "name": "Technical Writer",
+      "description": "Responsible for technical documentation",
+      "role": "technical_writer",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/documentation_standards.md"
+      ],
+      "prompt_template": "You are a Technical Writer responsible for creating clear and comprehensive documentation. Your role is to:\n1. Create user guides and manuals\n2. Document APIs and technical specifications\n3. Write tutorials and how-to guides\n4. Maintain documentation standards and consistency\n5. Ensure documentation is up-to-date with changes\n\nWhen writing documentation, ensure it is:\n- Clear, concise, and accurate\n- Well-organized and easy to navigate\n- Appropriate for the target audience\n- Consistently formatted and styled\n- Regularly updated and maintained\n\nFocus on making complex technical concepts accessible and understandable.",
+      "capabilities": [
+        "technical_documentation",
+        "api_documentation",
+        "user_guides",
+        "content_organization",
+        "writing_clarity"
+      ]
+    },
+    "ui_designer": {
+      "id": "ui_designer",
+      "name": "UI/UX Designer",
+      "description": "Responsible for user interface and experience design",
+      "role": "ui_designer",
+      "model": "large",
+      "allowed_tools": [
+        "view",
+        "ls",
+        "glob",
+        "grep",
+        "edit",
+        "write"
+      ],
+      "context_paths": [
+        "README.md",
+        "FLOSS.md",
+        "docs/design_system.md",
+        "docs/user_research.md",
+        "docs/accessibility.md"
+      ],
+      "prompt_template": "You are a UI/UX Designer responsible for creating great user experiences. Your role is to:\n1. Design intuitive user interfaces\n2. Create wireframes and mockups\n3. Conduct user research and usability testing\n4. Ensure accessibility standards are met\n5. Maintain design system consistency\n\nWhen designing interfaces, consider:\n- User needs and goals\n- Usability and accessibility\n- Visual consistency and branding\n- Mobile and responsive design\n- Performance implications\n\nFocus on creating beautiful, functional, and accessible interfaces that delight users.",
+      "capabilities": [
+        "interface_design",
+        "user_research",
+        "accessibility",
+        "visual_design",
+        "usability_testing"
+      ]
+    }
+  },
+  "communication_protocols": {
+    "bug_report": {
+      "channel": "team_channel",
+      "subject": "Bug Report",
+      "message": "A bug has been identified. Please investigate and provide a fix.",
+      "priority": 8
+    },
+    "code_review": {
+      "channel": "direct_message",
+      "subject": "Code Review Request",
+      "message": "I've submitted a pull request that requires your review. Please review the code and provide feedback.",
+      "priority": 7
+    },
+    "feature_request": {
+      "channel": "department_channel",
+      "subject": "Feature Request",
+      "message": "A new feature has been requested. Please evaluate and provide implementation plan.",
+      "priority": 6
+    },
+    "performance_issue": {
+      "channel": "direct_message",
+      "subject": "Performance Issue",
+      "message": "A performance issue has been identified. Please investigate and optimize.",
+      "priority": 7
+    },
+    "security_alert": {
+      "channel": "company_wide",
+      "subject": "Security Alert",
+      "message": "A security vulnerability has been identified. Immediate attention required.",
+      "priority": 10
+    },
+    "standup": {
+      "channel": "team_channel",
+      "subject": "Daily Standup",
+      "message": "Please provide your daily standup update: What did you do yesterday? What will you do today? Any blockers?",
+      "priority": 5
+    }
+  },
+  "collaboration_protocols": {
+    "feature_implementation": {
+      "initiating_agent": "tech_lead",
+      "target_agents": [
+        "senior_developer",
+        "junior_developer"
+      ],
+      "task": "Implement a new feature",
+      "context": "A new feature has been prioritized in the product roadmap. Implementation is needed.",
+      "expected_outcome": "Implemented feature with tests and documentation",
+      "priority": 7
+    },
+    "new_project": {
+      "initiating_agent": "product_manager",
+      "target_agents": [
+        "cto",
+        "tech_lead",
+        "project_manager"
+      ],
+      "task": "Plan and initiate a new project",
+      "context": "A new project has been approved by the CEO. We need to plan the technical implementation and project timeline.",
+      "expected_outcome": "Technical architecture document, project plan, and resource allocation plan",
+      "priority": 9
+    },
+    "performance_optimization": {
+      "initiating_agent": "devops_engineer",
+      "target_agents": [
+        "senior_developer",
+        "database_admin"
+      ],
+      "task": "Optimize system performance",
+      "context": "Performance metrics indicate the system is not meeting performance targets.",
+      "expected_outcome": "Performance optimization plan and implemented improvements",
+      "priority": 7
+    },
+    "security_audit": {
+      "initiating_agent": "security_engineer",
+      "target_agents": [
+        "cto",
+        "devops_engineer"
+      ],
+      "task": "Conduct a security audit",
+      "context": "Regular security audit is required to ensure system security and compliance.",
+      "expected_outcome": "Security audit report with identified vulnerabilities and recommendations",
+      "priority": 8
+    },
+    "user_experience_review": {
+      "initiating_agent": "ui_designer",
+      "target_agents": [
+        "product_manager",
+        "senior_developer"
+      ],
+      "task": "Review user experience",
+      "context": "User feedback indicates potential improvements to the user experience.",
+      "expected_outcome": "UX improvement recommendations and implementation plan",
+      "priority": 6
+    }
+  },
+  "workflows": {
+    "incident_response": {
+      "id": "incident_response",
+      "name": "Incident Response Process",
+      "description": "Workflow for responding to system incidents and outages",
+      "steps": [
+        {
+          "step_number": 1,
+          "responsible_agent": "devops_engineer",
+          "action": "Identify and assess incident",
+          "expected_output": "Incident report with severity classification"
+        },
+        {
+          "step_number": 2,
+          "responsible_agent": "cto",
+          "action": "Activate incident response",
+          "expected_output": "Incident response team assembled",
+          "dependencies": [
+            1
+          ]
+        },
+        {
+          "step_number": 3,
+          "responsible_agent": "devops_engineer",
+          "action": "Implement immediate fixes",
+          "expected_output": "System stabilized",
+          "dependencies": [
+            2
+          ]
+        },
+        {
+          "step_number": 4,
+          "responsible_agent": "security_engineer",
+          "action": "Security assessment",
+          "expected_output": "Security impact assessment",
+          "dependencies": [
+            3
+          ]
+        },
+        {
+          "step_number": 5,
+          "responsible_agent": "senior_developer",
+          "action": "Root cause analysis",
+          "expected_output": "Root cause analysis report",
+          "dependencies": [
+            3
+          ]
+        },
+        {
+          "step_number": 6,
+          "responsible_agent": "tech_lead",
+          "action": "Develop permanent fix",
+          "expected_output": "Permanent fix implementation plan",
+          "dependencies": [
+            5
+          ]
+        },
+        {
+          "step_number": 7,
+          "responsible_agent": "senior_developer",
+          "action": "Implement permanent fix",
+          "expected_output": "Implemented permanent fix",
+          "dependencies": [
+            6
+          ]
+        },
+        {
+          "step_number": 8,
+          "responsible_agent": "qa_engineer",
+          "action": "Test fix",
+          "expected_output": "Test results confirming fix",
+          "dependencies": [
+            7
+          ]
+        },
+        {
+          "step_number": 9,
+          "responsible_agent": "devops_engineer",
+          "action": "Deploy fix",
+          "expected_output": "Fix deployed to production",
+          "dependencies": [
+            8
+          ]
+        },
+        {
+          "step_number": 10,
+          "responsible_agent": "cto",
+          "action": "Post-incident review",
+          "expected_output": "Post-incident review report with action items",
+          "dependencies": [
+            9
+          ]
+        }
+      ]
+    },
+    "product_development": {
+      "id": "product_development",
+      "name": "Product Development Process",
+      "description": "Complete workflow for developing a new product feature from concept to deployment",
+      "steps": [
+        {
+          "step_number": 1,
+          "responsible_agent": "product_manager",
+          "action": "Define requirements",
+          "expected_output": "Detailed product requirements document"
+        },
+        {
+          "step_number": 2,
+          "responsible_agent": "business_analyst",
+          "action": "Analyze requirements",
+          "expected_output": "Requirements analysis report",
+          "dependencies": [
+            1
+          ]
+        },
+        {
+          "step_number": 3,
+          "responsible_agent": "cto",
+          "action": "Architect solution",
+          "expected_output": "Technical architecture document",
+          "dependencies": [
+            2
+          ]
+        },
+        {
+          "step_number": 4,
+          "responsible_agent": "tech_lead",
+          "action": "Create implementation plan",
+          "expected_output": "Detailed implementation plan with timeline",
+          "dependencies": [
+            3
+          ]
+        },
+        {
+          "step_number": 5,
+          "responsible_agent": "project_manager",
+          "action": "Coordinate resources",
+          "expected_output": "Resource allocation plan and team assignments",
+          "dependencies": [
+            4
+          ]
+        },
+        {
+          "step_number": 6,
+          "responsible_agent": "senior_developer",
+          "action": "Implement core features",
+          "expected_output": "Implemented core features with unit tests",
+          "dependencies": [
+            5
+          ]
+        },
+        {
+          "step_number": 7,
+          "responsible_agent": "junior_developer",
+          "action": "Implement supporting features",
+          "expected_output": "Implemented supporting features with unit tests",
+          "dependencies": [
+            5
+          ]
+        },
+        {
+          "step_number": 8,
+          "responsible_agent": "qa_engineer",
+          "action": "Test implementation",
+          "expected_output": "Test reports and bug reports",
+          "dependencies": [
+            6,
+            7
+          ]
+        },
+        {
+          "step_number": 9,
+          "responsible_agent": "security_engineer",
+          "action": "Security audit",
+          "expected_output": "Security audit report",
+          "dependencies": [
+            6,
+            7
+          ]
+        },
+        {
+          "step_number": 10,
+          "responsible_agent": "tech_lead",
+          "action": "Code review and integration",
+          "expected_output": "Integrated and reviewed codebase",
+          "dependencies": [
+            8,
+            9
+          ]
+        },
+        {
+          "step_number": 11,
+          "responsible_agent": "devops_engineer",
+          "action": "Deploy to staging",
+          "expected_output": "Deployed to staging environment",
+          "dependencies": [
+            10
+          ]
+        },
+        {
+          "step_number": 12,
+          "responsible_agent": "qa_engineer",
+          "action": "Staging validation",
+          "expected_output": "Staging validation report",
+          "dependencies": [
+            11
+          ]
+        },
+        {
+          "step_number": 13,
+          "responsible_agent": "product_manager",
+          "action": "User acceptance testing",
+          "expected_output": "UAT sign-off",
+          "dependencies": [
+            12
+          ]
+        },
+        {
+          "step_number": 14,
+          "responsible_agent": "devops_engineer",
+          "action": "Deploy to production",
+          "expected_output": "Deployed to production environment",
+          "dependencies": [
+            13
+          ]
+        },
+        {
+          "step_number": 15,
+          "responsible_agent": "technical_writer",
+          "action": "Update documentation",
+          "expected_output": "Updated user and technical documentation",
+          "dependencies": [
+            14
+          ]
+        }
+      ]
+    }
+  },
+  "enabled": true
+}

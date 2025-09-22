@@ -29,6 +29,7 @@ func init() {
 
 	rootCmd.AddCommand(runCmd)
 	rootCmd.AddCommand(updateProvidersCmd)
+	rootCmd.AddCommand(authCmd)
 }
 
 var rootCmd = &cobra.Command{
@@ -60,22 +61,22 @@ floss run "Explain the use of context in Go"
 floss -y
   `,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		app, err := setupApp(cmd)
+		appInstance, err := SetupApp(cmd)
 		if err != nil {
 			return err
 		}
-		defer app.Shutdown()
+		defer appInstance.Shutdown()
 
 		// Set up the TUI.
 		program := tea.NewProgram(
-			tui.New(app),
+			tui.New(appInstance),
 			tea.WithAltScreen(),
 			tea.WithContext(cmd.Context()),
 			tea.WithMouseCellMotion(),            // Use cell motion instead of all motion to reduce event flooding
 			tea.WithFilter(tui.MouseEventFilter), // Filter mouse events based on focus state
 		)
 
-		go app.Subscribe(program)
+		go appInstance.Subscribe(program)
 
 		if _, err := program.Run(); err != nil {
 			slog.Error("TUI run error", "error", err)
@@ -96,9 +97,9 @@ func Execute() {
 	}
 }
 
-// setupApp handles the common setup logic for both interactive and non-interactive modes.
+// SetupApp handles the common setup logic for both interactive and non-interactive modes.
 // It returns the app instance, config, cleanup function, and any error.
-func setupApp(cmd *cobra.Command) (*app.App, error) {
+func SetupApp(cmd *cobra.Command) (*app.App, error) {
 	debug, _ := cmd.Flags().GetBool("debug")
 	yolo, _ := cmd.Flags().GetBool("yolo")
 	dataDir, _ := cmd.Flags().GetString("data-dir")

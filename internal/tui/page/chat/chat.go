@@ -3,6 +3,7 @@ package chat
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/v2/help"
@@ -20,6 +21,7 @@ import (
 	"github.com/nom-nom-hub/floss/internal/session"
 	"github.com/nom-nom-hub/floss/internal/tui/components/anim"
 	"github.com/nom-nom-hub/floss/internal/tui/components/chat"
+	"github.com/nom-nom-hub/floss/internal/tui/components/chat/cmd"
 	"github.com/nom-nom-hub/floss/internal/tui/components/chat/editor"
 	"github.com/nom-nom-hub/floss/internal/tui/components/chat/header"
 	"github.com/nom-nom-hub/floss/internal/tui/components/chat/messages"
@@ -72,6 +74,11 @@ const (
 
 	// Timing constants
 	CancelTimerDuration = 2 * time.Second // Duration before cancel timer expires
+	
+	// Responsive breakpoints based on FLOSS UI Design System
+	BreakpointSmall  = 40  // Small terminal breakpoint
+	BreakpointMedium = 80  // Medium terminal breakpoint
+	BreakpointLarge  = 120 // Large terminal breakpoint
 )
 
 type ChatPage interface {
@@ -466,8 +473,36 @@ func (p *chatPage) View() string {
 	} else {
 		messagesView := p.chat.View()
 		editorView := p.editor.View()
+		
+		// Ensure we always have valid dimensions
+		if p.width <= 0 || p.height <= 0 {
+			return ""
+		}
+		
 		if p.compact {
 			headerView := p.header.View()
+			// Calculate available height for messages
+			availableHeight := p.height - EditorHeight
+			if p.height > HeaderHeight {
+				availableHeight = p.height - EditorHeight - HeaderHeight
+			}
+			
+			// Ensure availableHeight is not negative
+			if availableHeight < 0 {
+				availableHeight = 0
+			}
+			
+			// Truncate messages view if necessary to fit within available space
+			lines := strings.Split(messagesView, "\n")
+			if len(lines) > availableHeight && availableHeight > 0 {
+				start := len(lines) - availableHeight
+				if start < 0 {
+					start = 0
+				}
+				lines = lines[start:]
+				messagesView = strings.Join(lines, "\n")
+			}
+			
 			chatView = lipgloss.JoinVertical(
 				lipgloss.Left,
 				headerView,
@@ -476,14 +511,35 @@ func (p *chatPage) View() string {
 			)
 		} else {
 			sidebarView := p.sidebar.View()
-			messages := lipgloss.JoinHorizontal(
+			// Calculate available height for the main content area (messages + sidebar)
+			availableHeight := p.height - EditorHeight
+			
+			// Ensure availableHeight is not negative
+			if availableHeight < 0 {
+				availableHeight = 0
+			}
+			
+			// Create the messages and sidebar area
+			messagesArea := lipgloss.JoinHorizontal(
 				lipgloss.Left,
 				messagesView,
 				sidebarView,
 			)
+			
+			// Truncate messages area if necessary to fit within available space
+			areaLines := strings.Split(messagesArea, "\n")
+			if len(areaLines) > availableHeight && availableHeight > 0 {
+				start := len(areaLines) - availableHeight
+				if start < 0 {
+					start = 0
+				}
+				areaLines = areaLines[start:]
+				messagesArea = strings.Join(areaLines, "\n")
+			}
+			
 			chatView = lipgloss.JoinVertical(
 				lipgloss.Left,
-				messages,
+				messagesArea,
 				p.editor.View(),
 			)
 		}
@@ -621,9 +677,45 @@ func (p *chatPage) handleCompactMode(newWidth int, newHeight int) {
 	if (newWidth >= CompactModeWidthBreakpoint && newHeight >= CompactModeHeightBreakpoint) && p.compact {
 		p.setCompactMode(false)
 	}
+	
+	// Additional responsive behavior based on granular breakpoints
+	if newWidth < BreakpointSmall {
+		// Small terminal behavior
+		// Minimize UI elements, hide non-critical components
+	} else if newWidth < BreakpointMedium {
+		// Medium terminal behavior
+		// Show essential components with reduced spacing
+	} else if newWidth >= BreakpointLarge {
+		// Large terminal behavior
+		// Show full UI with enhanced spacing and components
+	}
 }
 
 func (p *chatPage) SetSize(width, height int) tea.Cmd {
+	p.handleCompactMode(width, height)
+	p.width = width
+	p.height = height
+	
+	// Ensure we have valid dimensions
+	if width <= 0 || height <= 0 {
+		return nil
+	}
+	
+	// Implement responsive behavior based on granular breakpoints
+	if width < BreakpointSmall {
+		// Small terminal behavior - compact everything
+		return p.setSmallTerminalLayout(width, height)
+	} else if width < BreakpointMedium {
+		// Medium terminal behavior - balanced layout
+		return p.setMediumTerminalLayout(width, height)
+	} else {
+		// Large terminal behavior - full featured layout
+		return p.setLargeTerminalLayout(width, height)
+	}
+}
+
+// setSmallTerminalLayout implements layout for small terminals (< 40 columns)
+func (p *chatPage) setSmallTerminalLayout(width, height int) tea.Cmd {
 	p.handleCompactMode(width, height)
 	p.width = width
 	p.height = height
@@ -638,18 +730,112 @@ func (p *chatPage) SetSize(width, height int) tea.Cmd {
 			cmds = append(cmds, p.editor.SetPosition(0, height-EditorHeight))
 		}
 	} else {
+		// Single column layout for small terminals
+		// Ensure editor stays within bounds by calculating actual available height
+		availableHeight := height - EditorHeight
 		if p.compact {
-			cmds = append(cmds, p.chat.SetSize(width, height-EditorHeight-HeaderHeight))
+			availableHeight = height - EditorHeight - HeaderHeight
+		}
+		cmds = append(cmds, p.chat.SetSize(width, availableHeight))
+		p.detailsWidth = width - DetailsPositioning
+		cmds = append(cmds, p.sidebar.SetSize(p.detailsWidth-LeftRightBorders, p.detailsHeight-TopBottomBorders))
+		cmds = append(cmds, p.editor.SetSize(width, EditorHeight))
+		cmds = append(cmds, p.header.SetWidth(width-BorderWidth))
+		// Ensure editor is always positioned at the bottom of the terminal
+		editorY := height - EditorHeight
+		if editorY < 0 {
+			editorY = 0
+		}
+		cmds = append(cmds, p.editor.SetPosition(0, editorY))
+	}
+	return tea.Batch(cmds...)
+}
+
+// setMediumTerminalLayout implements layout for medium terminals (40-80 columns)
+func (p *chatPage) setMediumTerminalLayout(width, height int) tea.Cmd {
+	p.handleCompactMode(width, height)
+	p.width = width
+	p.height = height
+	var cmds []tea.Cmd
+
+	if p.session.ID == "" {
+		if p.splashFullScreen {
+			cmds = append(cmds, p.splash.SetSize(width, height))
+		} else {
+			cmds = append(cmds, p.splash.SetSize(width, height-EditorHeight))
+			cmds = append(cmds, p.editor.SetSize(width, EditorHeight))
+			cmds = append(cmds, p.editor.SetPosition(0, height-EditorHeight))
+		}
+	} else {
+		// Calculate available height for chat area
+		availableHeight := height - EditorHeight
+		if p.compact {
+			availableHeight = height - EditorHeight - HeaderHeight
+		}
+		
+		if p.compact {
+			cmds = append(cmds, p.chat.SetSize(width, availableHeight))
 			p.detailsWidth = width - DetailsPositioning
 			cmds = append(cmds, p.sidebar.SetSize(p.detailsWidth-LeftRightBorders, p.detailsHeight-TopBottomBorders))
 			cmds = append(cmds, p.editor.SetSize(width, EditorHeight))
 			cmds = append(cmds, p.header.SetWidth(width-BorderWidth))
 		} else {
-			cmds = append(cmds, p.chat.SetSize(width-SideBarWidth, height-EditorHeight))
+			// Adjusted layout for medium terminals
+			adjustedSidebarWidth := min(SideBarWidth, width/3) // Sidebar takes up to 1/3 of width
+			cmds = append(cmds, p.chat.SetSize(width-adjustedSidebarWidth, availableHeight))
 			cmds = append(cmds, p.editor.SetSize(width, EditorHeight))
-			cmds = append(cmds, p.sidebar.SetSize(SideBarWidth, height-EditorHeight))
+			cmds = append(cmds, p.sidebar.SetSize(adjustedSidebarWidth, availableHeight))
 		}
-		cmds = append(cmds, p.editor.SetPosition(0, height-EditorHeight))
+		// Ensure editor is always positioned at the bottom of the terminal
+		editorY := height - EditorHeight
+		if editorY < 0 {
+			editorY = 0
+		}
+		cmds = append(cmds, p.editor.SetPosition(0, editorY))
+	}
+	return tea.Batch(cmds...)
+}
+
+// setLargeTerminalLayout implements layout for large terminals (> 80 columns)
+func (p *chatPage) setLargeTerminalLayout(width, height int) tea.Cmd {
+	p.handleCompactMode(width, height)
+	p.width = width
+	p.height = height
+	var cmds []tea.Cmd
+
+	if p.session.ID == "" {
+		if p.splashFullScreen {
+			cmds = append(cmds, p.splash.SetSize(width, height))
+		} else {
+			cmds = append(cmds, p.splash.SetSize(width, height-EditorHeight))
+			cmds = append(cmds, p.editor.SetSize(width, EditorHeight))
+			cmds = append(cmds, p.editor.SetPosition(0, height-EditorHeight))
+		}
+	} else {
+		// Calculate available height for chat area
+		availableHeight := height - EditorHeight
+		if p.compact {
+			availableHeight = height - EditorHeight - HeaderHeight
+		}
+		
+		if p.compact {
+			cmds = append(cmds, p.chat.SetSize(width, availableHeight))
+			p.detailsWidth = width - DetailsPositioning
+			cmds = append(cmds, p.sidebar.SetSize(p.detailsWidth-LeftRightBorders, p.detailsHeight-TopBottomBorders))
+			cmds = append(cmds, p.editor.SetSize(width, EditorHeight))
+			cmds = append(cmds, p.header.SetWidth(width-BorderWidth))
+		} else {
+			// Full featured layout for large terminals
+			cmds = append(cmds, p.chat.SetSize(width-SideBarWidth, availableHeight))
+			cmds = append(cmds, p.editor.SetSize(width, EditorHeight))
+			cmds = append(cmds, p.sidebar.SetSize(SideBarWidth, availableHeight))
+		}
+		// Ensure editor is always positioned at the bottom of the terminal
+		editorY := height - EditorHeight
+		if editorY < 0 {
+			editorY = 0
+		}
+		cmds = append(cmds, p.editor.SetPosition(0, editorY))
 	}
 	return tea.Batch(cmds...)
 }
@@ -736,6 +922,18 @@ func (p *chatPage) toggleDetails() {
 }
 
 func (p *chatPage) sendMessage(text string, attachments []message.Attachment) tea.Cmd {
+	// Check if the text is a command
+	commandParser := cmd.NewParser(p.app)
+	if commandParser.IsCommand(text) {
+		cmd := commandParser.ParseCommand(text)
+		if cmd != nil {
+			// Execute the command and return immediately
+			// Commands should not be sent to the AI agent
+			return commandParser.ExecuteCommand(cmd)
+		}
+		// If parsing failed, fall through to send as regular message
+	}
+
 	session := p.session
 	var cmds []tea.Cmd
 	if p.session.ID == "" {

@@ -6,7 +6,6 @@ import (
 	"github.com/nom-nom-hub/floss/internal/history"
 	"github.com/nom-nom-hub/floss/internal/lsp"
 	"github.com/nom-nom-hub/floss/internal/tui/components/chat"
-	"github.com/nom-nom-hub/floss/internal/tui/components/chat/editor"
 	"github.com/nom-nom-hub/floss/internal/tui/components/chat/header"
 	"github.com/nom-nom-hub/floss/internal/tui/components/chat/sidebar"
 	"github.com/nom-nom-hub/floss/internal/tui/components/core/status"
@@ -33,11 +32,6 @@ func NewFLOSSFactory(app *app.App, history history.Service, lspClients *csync.Ma
 // CreateChat creates a FLOSS-styled chat component
 func (f *FLOSSFactory) CreateChat() chat.MessageListCmp {
 	return chat.NewFloss(f.app)
-}
-
-// CreateEditor creates a FLOSS-styled editor component
-func (f *FLOSSFactory) CreateEditor() editor.Editor {
-	return editor.NewFloss(f.app)
 }
 
 // CreateSidebar creates a FLOSS-styled sidebar component

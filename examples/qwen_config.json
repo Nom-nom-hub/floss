@@ -1,0 +1,32 @@
+{
+  "$schema": "https://charm.land/floss.json",
+  "providers": {
+    "qwen": {
+      "id": "qwen",
+      "name": "Qwen",
+      "base_url": "https://chat.qwen.ai/api/v1",
+      "type": "qwen",
+      "api_key": "$QWEN_API_KEY",
+      "models": [
+        {
+          "id": "qwen-coder-plus",
+          "name": "Qwen Coder Plus",
+          "context_window": 32768,
+          "default_max_tokens": 8192,
+          "can_reason": true,
+          "supports_attachments": true
+        }
+      ]
+    }
+  },
+  "models": {
+    "large": {
+      "model": "qwen-coder-plus",
+      "provider": "qwen"
+    },
+    "small": {
+      "model": "qwen-coder-plus",
+      "provider": "qwen"
+    }
+  }
+}

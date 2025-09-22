@@ -654,14 +654,21 @@ func (m *messageListCmp) GetSize() (int, int) {
 
 // SetSize updates the component dimensions and propagates to the list component.
 func (m *messageListCmp) SetSize(width int, height int) tea.Cmd {
+	// Validate input dimensions
+	if width <= 0 || height <= 0 {
+		return nil
+	}
+	
 	m.width = width
 	m.height = height
 	if m.promptQueue > 0 {
 		queueHeight := 3 + 1 // 1 for padding top
-		lHight := max(0, height-(1+queueHeight))
-		return m.listCmp.SetSize(width-2, lHight)
+		lHeight := max(0, height-(1+queueHeight))
+		return m.listCmp.SetSize(width-2, lHeight)
 	}
-	return m.listCmp.SetSize(width-2, max(0, height-1)) // for padding
+	// Ensure minimum height of 1 to prevent rendering issues
+	contentHeight := max(1, height-1) // for padding
+	return m.listCmp.SetSize(width-2, contentHeight)
 }
 
 // Blur implements MessageListCmp.

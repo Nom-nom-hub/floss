@@ -451,8 +451,11 @@ func (m *enhancedEditorCmp) View() string {
 func (m *enhancedEditorCmp) SetSize(width, height int) tea.Cmd {
 	m.width = width
 	m.height = height
-	m.textarea.SetWidth(width - 4)   // adjust for padding and borders
-	m.textarea.SetHeight(height - 4) // adjust for padding and borders
+	// Ensure minimum size constraints
+	textWidth := max(10, width-4)   // adjust for padding and borders
+	textHeight := max(3, height-4)  // adjust for padding and borders
+	m.textarea.SetWidth(textWidth)
+	m.textarea.SetHeight(textHeight)
 	return nil
 }
 

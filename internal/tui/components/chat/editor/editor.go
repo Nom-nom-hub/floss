@@ -21,7 +21,9 @@ import (
 	"github.com/nom-nom-hub/floss/internal/fsext"
 	"github.com/nom-nom-hub/floss/internal/message"
 	"github.com/nom-nom-hub/floss/internal/session"
+	"github.com/nom-nom-hub/floss/internal/tui/components/anim"
 	"github.com/nom-nom-hub/floss/internal/tui/components/chat"
+	"github.com/nom-nom-hub/floss/internal/tui/components/chat/cmd"
 	"github.com/nom-nom-hub/floss/internal/tui/components/completions"
 	"github.com/nom-nom-hub/floss/internal/tui/components/core/layout"
 	"github.com/nom-nom-hub/floss/internal/tui/components/dialogs"
@@ -73,6 +75,11 @@ type editorCmp struct {
 	currentQuery          string
 	completionsStartIndex int
 	isCompletionsOpen     bool
+	
+	// Micro-interactions for user feedback
+	buttonPressFeedback   *anim.MicroInteraction
+	selectionFeedback     *anim.MicroInteraction
+	successFeedback       *anim.MicroInteraction
 }
 
 var DeleteKeyMaps = DeleteAttachmentKeyMaps{
@@ -153,6 +160,18 @@ func (m *editorCmp) send() tea.Cmd {
 		return util.CmdHandler(dialogs.OpenDialogMsg{Model: quit.NewQuitDialog()})
 	}
 
+	// Check if the text is a command
+	commandParser := cmd.NewParser(m.app)
+	if commandParser.IsCommand(value) {
+		cmd := commandParser.ParseCommand(value)
+		if cmd != nil {
+			m.textarea.Reset()
+			m.randomizePlaceholders()
+			return commandParser.ExecuteCommand(cmd)
+		}
+		// If parsing failed, fall through to send as regular message
+	}
+
 	m.textarea.Reset()
 	attachments := m.attachments
 
@@ -188,7 +207,10 @@ func (m *editorCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, util.ReportError(fmt.Errorf("cannot add more than %d images", maxAttachments))
 		}
 		m.attachments = append(m.attachments, msg.Attachment)
-		return m, nil
+		// Add success feedback when attachment is added
+		m.successFeedback = anim.SuccessFeedback()
+		cmds = append(cmds, m.successFeedback.Init())
+		return m, tea.Batch(cmds...)
 	case completions.CompletionsOpenedMsg:
 		m.isCompletionsOpen = true
 	case completions.CompletionsClosedMsg:
@@ -214,12 +236,18 @@ func (m *editorCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.currentQuery = ""
 				m.completionsStartIndex = 0
 			}
+			// Add selection feedback when completion is selected
+			m.selectionFeedback = anim.SelectionFeedback()
+			cmds = append(cmds, m.selectionFeedback.Init())
 		}
 
 	case commands.OpenExternalEditorMsg:
 		if m.app.CoderAgent.IsSessionBusy(m.session.ID) {
 			return m, util.ReportWarn("Agent is working, please wait...")
 		}
+		// Add button press feedback when opening external editor
+		m.buttonPressFeedback = anim.ButtonPressFeedback()
+		cmds = append(cmds, m.buttonPressFeedback.Init())
 		return m, m.openEditor(m.textarea.Value())
 	case OpenEditorMsg:
 		m.textarea.SetValue(msg.Text)
@@ -287,7 +315,10 @@ func (m *editorCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if key.Matches(msg, DeleteKeyMaps.DeleteAllAttachments) && m.deleteMode {
 			m.deleteMode = false
 			m.attachments = nil
-			return m, nil
+			// Add selection feedback when all attachments are deleted
+			m.selectionFeedback = anim.SelectionFeedback()
+			cmds = append(cmds, m.selectionFeedback.Init())
+			return m, tea.Batch(cmds...)
 		}
 		rune := msg.Code
 		if m.deleteMode && unicode.IsDigit(rune) {
@@ -299,13 +330,19 @@ func (m *editorCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				} else {
 					m.attachments = slices.Delete(m.attachments, num, num+1)
 				}
-				return m, nil
+				// Add selection feedback when attachment is deleted
+				m.selectionFeedback = anim.SelectionFeedback()
+				cmds = append(cmds, m.selectionFeedback.Init())
+				return m, tea.Batch(cmds...)
 			}
 		}
 		if key.Matches(msg, m.keyMap.OpenEditor) {
 			if m.app.CoderAgent.IsSessionBusy(m.session.ID) {
 				return m, util.ReportWarn("Agent is working, please wait...")
 			}
+			// Add button press feedback when opening editor
+			m.buttonPressFeedback = anim.ButtonPressFeedback()
+			cmds = append(cmds, m.buttonPressFeedback.Init())
 			return m, m.openEditor(m.textarea.Value())
 		}
 		if key.Matches(msg, DeleteKeyMaps.Escape) {
@@ -324,8 +361,34 @@ func (m *editorCmp) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.textarea.SetValue(strings.TrimSuffix(value, "\\"))
 			} else {
 				// Otherwise, send the message
+				// Add button press feedback when sending message
+				m.buttonPressFeedback = anim.ButtonPressFeedback()
+				cmds = append(cmds, m.buttonPressFeedback.Init())
 				return m, m.send()
 			}
+		}
+	case anim.StepMsg:
+		// Handle micro-interaction updates
+		if m.buttonPressFeedback != nil && m.buttonPressFeedback.IsAnimating() {
+			model, cmd := m.buttonPressFeedback.Update(msg)
+			if micro, ok := model.(*anim.MicroInteraction); ok {
+				m.buttonPressFeedback = micro
+			}
+			cmds = append(cmds, cmd)
+		}
+		if m.selectionFeedback != nil && m.selectionFeedback.IsAnimating() {
+			model, cmd := m.selectionFeedback.Update(msg)
+			if micro, ok := model.(*anim.MicroInteraction); ok {
+				m.selectionFeedback = micro
+			}
+			cmds = append(cmds, cmd)
+		}
+		if m.successFeedback != nil && m.successFeedback.IsAnimating() {
+			model, cmd := m.successFeedback.Update(msg)
+			if micro, ok := model.(*anim.MicroInteraction); ok {
+				m.successFeedback = micro
+			}
+			cmds = append(cmds, cmd)
 		}
 	}
 
@@ -419,7 +482,11 @@ func (m *editorCmp) randomizePlaceholders() {
 }
 
 func (m *editorCmp) View() string {
-	t := styles.CurrentTheme()
+	// Validate dimensions
+	if m.width <= 0 || m.height <= 0 {
+		return ""
+	}
+	
 	// Update placeholder
 	if m.app.CoderAgent != nil && m.app.CoderAgent.IsBusy() {
 		m.textarea.Placeholder = m.workingPlaceholder
@@ -430,29 +497,56 @@ func (m *editorCmp) View() string {
 		m.textarea.Placeholder = "Yolo mode!"
 	}
 	
-	// Base styling with border handling according to UI/UX specification
-	baseStyle := t.S().Base
+	// Use enhanced styling based on FLOSS design system
+	enhancedStyle := styles.NewEnhancedStyle()
+	baseStyle := enhancedStyle.Panel
+	
+	var content string
 	if len(m.attachments) == 0 {
 		// No attachments: 1 unit padding all around
-		content := baseStyle.Padding(1).Render(m.textarea.View())
-		return content
+		content = baseStyle.Padding(styles.S).Render(m.textarea.View())
+	} else {
+		// With attachments: 1 unit top/bottom padding, 1 unit left/right padding
+		content = baseStyle.Padding(0, styles.S, styles.S, styles.S).Render(
+			lipgloss.JoinVertical(lipgloss.Top,
+				m.attachmentsContent(),
+				m.textarea.View(),
+			),
+		)
 	}
 	
-	// With attachments: 1 unit top/bottom padding, 1 unit left/right padding
-	content := baseStyle.Padding(0, 1, 1, 1).Render(
-		lipgloss.JoinVertical(lipgloss.Top,
-			m.attachmentsContent(),
-			m.textarea.View(),
-		),
-	)
+	// Add micro-interaction feedback overlays if active
+	var feedbackLayers []string
+	feedbackLayers = append(feedbackLayers, content)
+	
+	if m.buttonPressFeedback != nil && m.buttonPressFeedback.IsAnimating() {
+		feedbackLayers = append(feedbackLayers, m.buttonPressFeedback.View())
+	}
+	
+	if m.selectionFeedback != nil && m.selectionFeedback.IsAnimating() {
+		feedbackLayers = append(feedbackLayers, m.selectionFeedback.View())
+	}
+	
+	if m.successFeedback != nil && m.successFeedback.IsAnimating() {
+		feedbackLayers = append(feedbackLayers, m.successFeedback.View())
+	}
+	
+	// Join content with feedback layers
+	if len(feedbackLayers) > 1 {
+		return lipgloss.JoinVertical(lipgloss.Left, feedbackLayers...)
+	}
+	
 	return content
 }
 
 func (m *editorCmp) SetSize(width, height int) tea.Cmd {
 	m.width = width
 	m.height = height
-	m.textarea.SetWidth(width - 2)   // adjust for padding
-	m.textarea.SetHeight(height - 2) // adjust for padding
+	// Ensure minimum size constraints
+	textWidth := max(10, width-2)   // adjust for padding
+	textHeight := max(3, height-2)  // adjust for padding
+	m.textarea.SetWidth(textWidth)
+	m.textarea.SetHeight(textHeight)
 	return nil
 }
 
@@ -467,7 +561,7 @@ func (m *editorCmp) attachmentsContent() string {
 	// Badges: Small rectangular badges with DocumentIcon according to UI/UX specification
 	// Background: FgMuted with FgBase text
 	attachmentStyles := t.S().Base.
-		MarginLeft(1).
+		MarginLeft(styles.S).
 		Background(t.FgMuted).
 		Foreground(t.FgBase)
 		
@@ -595,6 +689,11 @@ func New(app *app.App) Editor {
 		app:      app,
 		textarea: ta,
 		keyMap:   DefaultEditorKeyMap(),
+		
+		// Initialize micro-interactions for user feedback
+		buttonPressFeedback: anim.ButtonPressFeedback(),
+		selectionFeedback:   anim.SelectionFeedback(),
+		successFeedback:     anim.SuccessFeedback(),
 	}
 	e.setEditorPrompt()
 
@@ -607,11 +706,5 @@ func New(app *app.App) Editor {
 func NewEnhanced(app *app.App) EnhancedEditor {
 	// This is a placeholder that refers to the enhanced implementation
 	// The actual implementation is in enhanced.go
-	return nil
-}
-
-// NewFloss creates a new FLOSS-styled editor
-func NewFloss(app *app.App) Editor {
-	// This function is implemented in floss.go
 	return nil
 }

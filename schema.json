@@ -134,7 +134,8 @@
             "anthropic",
             "gemini",
             "azure",
-            "vertexai"
+            "vertexai",
+            "qwen"
           ],
           "default": "openai"
         },

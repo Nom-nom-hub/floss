@@ -13,7 +13,7 @@
 
 ## Features
 
-- **Multi-Model:** Choose from a wide range of LLMs or add your own via OpenAI- or Anthropic-compatible APIs
+- **Multi-Model:** Choose from a wide range of LLMs including Qwen, or add your own via OpenAI- or Anthropic-compatible APIs
 - **Flexible:** Switch LLMs mid-session while preserving context
 - **Session-Based:** Maintain multiple work sessions and contexts per project
 - **LSP-Enhanced:** Floss uses LSPs for additional context, just like you do
@@ -92,10 +92,9 @@ go install github.com/nom-nom-hub/floss@latest
 ## Getting Started
 
 The quickest way to get started is to grab an API key for your preferred
-provider such as Anthropic, OpenAI, Groq, or OpenRouter and just start
-Floss. You'll be prompted to enter your API key.
+## Providers
 
-That said, you can also set environment variables for preferred providers.
+Floss supports a wide range of providers out of the box. You can use environment variables to configure your preferred providers.
 
 | Environment Variable        | Provider                                           |
 | --------------------------- | -------------------------------------------------- |
@@ -107,12 +106,80 @@ That said, you can also set environment variables for preferred providers.
 | `VERTEXAI_PROJECT`          | Google Cloud VertexAI (Gemini)                     |
 | `VERTEXAI_LOCATION`         | Google Cloud VertexAI (Gemini)                     |
 | `GROQ_API_KEY`              | Groq                                               |
+| `QWEN_API_KEY`              | Qwen                                               |
 | `AWS_ACCESS_KEY_ID`         | AWS Bedrock (Claude)                               |
 | `AWS_SECRET_ACCESS_KEY`     | AWS Bedrock (Claude)                               |
 | `AWS_REGION`                | AWS Bedrock (Claude)                               |
 | `AZURE_OPENAI_API_ENDPOINT` | Azure OpenAI models                                |
 | `AZURE_OPENAI_API_KEY`      | Azure OpenAI models (optional when using Entra ID) |
 | `AZURE_OPENAI_API_VERSION`  | Azure OpenAI models                                |
+
+### Qwen Provider
+
+Floss now supports Qwen as a provider. You can authenticate with Qwen using the OAuth2 device code flow:
+
+```bash
+floss auth qwen
+```
+
+This will guide you through the authentication process and store your credentials securely.
+
+Once authenticated, you can configure Qwen as a provider by adding it to your configuration file. See the [examples/qwen_config.json](examples/qwen_config.json) file for a complete configuration example.
+
+Or set it as your default provider by setting the `QWEN_API_KEY` environment variable:
+
+```bash
+export QWEN_API_KEY="Bearer your-access-token"
+floss
+```
+
+### Disabling Provider Auto-Updates
+
+By default, Floss automatically updates providers and models from [Catwalk](https://github.com/charmbracelet/catwalk),
+the open source Floss provider database. This means that when new providers and
+models are added to Catwalk, they will automatically appear in Floss without
+requiring an update.
+
+For air-gapped environments, this might not be want you want, and this feature can
+be disabled.
+
+To disable automatic provider updates, set `disable_provider_auto_update` into
+your config:
+
+```json
+{
+  "options": {
+    "disable_provider_auto_update": true
+  }
+}
+```
+
+Or set the `FLOSS_DISABLE_PROVIDER_AUTO_UPDATE` environment variable:
+
+```bash
+export FLOSS_DISABLE_PROVIDER_AUTO_UPDATE=1
+```
+
+### Manually updating providers
+
+Manually updating providers is possible with the `floss update-providers`
+command.
+
+```bash
+# Update providers remotely from Catwalk.
+floss update-providers
+
+# Update providers from a custom Catwalk base URL.
+floss update-providers https://example.com/
+
+# Update providers from a local file.
+floss update-providers /path/to/local-providers.json
+
+# Reset providers to the embedded version, embedded at floss at build time.
+floss update-providers embedded
+
+floss update-providers --help
+```
 
 ### By the Way
 
@@ -456,56 +523,27 @@ config:
 }
 ```
 
-## Disabling Provider Auto-Updates
+## Qwen Provider
 
-By default, Floss automatically checks for the latest and greatest list of
-providers and models from [Catwalk](https://github.com/charmbracelet/catwalk),
-the open source Floss provider database. This means that when new providers and
-models are available, or when model metadata changes, Floss automatically
-updates your local configuration.
-
-For those with restricted internet access, or those who prefer to work in
-air-gapped environments, this might not be want you want, and this feature can
-be disabled.
-
-To disable automatic provider updates, set `disable_provider_auto_update` into
-your `floss.json` config:
-
-```json
-{
-  "$schema": "https://nom-nom-hub.land/floss.json",
-  "options": {
-    "disable_provider_auto_update": true
-  }
-}
-```
-
-Or set the `FLOSS_DISABLE_PROVIDER_AUTO_UPDATE` environment variable:
+Floss now supports Qwen as a provider. You can authenticate with Qwen using the OAuth2 device code flow:
 
 ```bash
-export FLOSS_DISABLE_PROVIDER_AUTO_UPDATE=1
+floss auth qwen
 ```
 
-### Manually updating providers
+This will guide you through the authentication process and store your credentials securely.
 
-Manually updating providers is possible with the `floss update-providers`
-command:
+Once authenticated, you can use Qwen as your provider:
 
 ```bash
-# Update providers remotely from Catwalk.
-floss update-providers
+floss chat --provider qwen
+```
 
-# Update providers from a custom Catwalk base URL.
-floss update-providers https://example.com/
+Or set it as your default provider by setting the `QWEN_API_KEY` environment variable:
 
-# Update providers from a local file.
-floss update-providers /path/to/local-providers.json
-
-# Reset providers to the embedded version, embedded at floss at build time.
-floss update-providers embedded
-
-# For more info:
-floss update-providers --help
+```bash
+export QWEN_API_KEY="Bearer your-access-token"
+floss
 ```
 
 ## FLOSS Branding

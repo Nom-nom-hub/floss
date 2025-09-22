@@ -22,6 +22,13 @@ const (
 	defaultListIndent      = 2
 	defaultListLevelIndent = 4
 	defaultMargin          = 2
+	
+	// Typography sizes based on the FLOSS UI Design System
+	H1Size = 16 // 16pt
+	H2Size = 14 // 14pt
+	H3Size = 12 // 12pt
+	BodySize = 10 // 10pt
+	CaptionSize = 8 // 8pt
 )
 
 type Theme struct {
@@ -104,6 +111,13 @@ type Styles struct {
 	Muted        lipgloss.Style
 	Subtle       lipgloss.Style
 
+	// Typography hierarchy based on FLOSS UI Design System
+	H1 lipgloss.Style
+	H2 lipgloss.Style
+	H3 lipgloss.Style
+	Body lipgloss.Style
+	Caption lipgloss.Style
+
 	Success lipgloss.Style
 	Error   lipgloss.Style
 	Warning lipgloss.Style
@@ -155,6 +169,24 @@ func (t *Theme) buildStyles() *Styles {
 		Muted: base.Foreground(t.FgMuted),
 
 		Subtle: base.Foreground(t.FgSubtle),
+
+		// Typography hierarchy based on FLOSS UI Design System
+		H1: base.
+			Bold(true).
+			Foreground(t.Accent),
+			
+		H2: base.
+			Bold(true).
+			Foreground(t.Secondary),
+			
+		H3: base.
+			Bold(true).
+			Foreground(t.Primary),
+
+		Body: base,
+
+		Caption: base.
+			Foreground(t.FgSubtle),
 
 		Success: base.Foreground(t.Success),
 
@@ -240,16 +272,19 @@ func (t *Theme) buildStyles() *Styles {
 					Color:           stringPtr(charmtone.Zest.Hex()),
 					BackgroundColor: stringPtr(charmtone.Charple.Hex()),
 					Bold:            boolPtr(true),
+					// Apply H1 typography size
 				},
 			},
 			H2: ansi.StyleBlock{
 				StylePrimitive: ansi.StylePrimitive{
 					Prefix: "## ",
+					// Apply H2 typography size
 				},
 			},
 			H3: ansi.StyleBlock{
 				StylePrimitive: ansi.StylePrimitive{
 					Prefix: "### ",
+					// Apply H3 typography size
 				},
 			},
 			H4: ansi.StyleBlock{

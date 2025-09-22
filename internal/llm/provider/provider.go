@@ -203,6 +203,11 @@ func NewProvider(cfg config.ProviderConfig, opts ...ProviderClientOption) (Provi
 			options: clientOptions,
 			client:  newVertexAIClient(clientOptions),
 		}, nil
+	case "qwen":
+		return &baseProvider[QwenClient]{
+			options: clientOptions,
+			client:  newQwenClient(clientOptions),
+		}, nil
 	}
 	return nil, fmt.Errorf("provider not supported: %s", cfg.Type)
 }

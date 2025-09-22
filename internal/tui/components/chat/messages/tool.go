@@ -701,6 +701,11 @@ func (m *toolCallCmp) SetIsNested(isNested bool) {
 // renderPending displays the tool name with a loading animation for pending tool calls
 func (m *toolCallCmp) renderPending() string {
 	t := styles.CurrentTheme()
+	
+	// Pending Tools styling according to UI/UX specification
+	// Icon: ● (ToolPending) in GreenDark
+	// Tool name in Blue
+	// Loading animation
 	icon := t.S().Base.Foreground(t.GreenDark).Render(styles.ToolPending)
 	if m.isNested {
 		tool := t.S().Base.Foreground(t.FgHalfMuted).Render(prettifyToolName(m.call.Name))
@@ -718,10 +723,10 @@ func (m *toolCallCmp) style() lipgloss.Style {
 	if m.isNested {
 		return t.S().Muted
 	}
-	style := t.S().Muted.PaddingLeft(4)
+	style := t.S().Muted.PaddingLeft(styles.M)
 
 	if m.focused {
-		style = style.PaddingLeft(3).BorderStyle(focusedMessageBorder).BorderLeft(true).BorderForeground(t.GreenDark)
+		style = style.PaddingLeft(styles.S).BorderStyle(focusedMessageBorder).BorderLeft(true).BorderForeground(t.GreenDark)
 	}
 	return style
 }
@@ -730,9 +735,9 @@ func (m *toolCallCmp) style() lipgloss.Style {
 // accounting for borders and padding
 func (m *toolCallCmp) textWidth() int {
 	if m.isNested {
-		return m.width - 6
+		return m.width - styles.M - styles.S // Account for padding and border
 	}
-	return m.width - 5 // take into account the border and PaddingLeft
+	return m.width - styles.L - styles.S // Account for padding and border
 }
 
 // fit truncates content to fit within the specified width with ellipsis

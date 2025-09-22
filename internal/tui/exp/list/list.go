@@ -57,6 +57,7 @@ type List[T Item] interface {
 	SelectParagraph(col, line int)
 	GetSelectedText(paddingLeft int) string
 	HasSelection() bool
+	View() string
 }
 
 type direction int
@@ -451,18 +452,38 @@ func (l *list[T]) View() string {
 	viewStart := max(0, start)
 	viewEnd := min(len(lines), end+1)
 
+	// Ensure we have valid bounds
+	if viewStart >= len(lines) {
+		viewStart = max(0, len(lines)-1)
+	}
+	if viewEnd > len(lines) {
+		viewEnd = len(lines)
+	}
 	if viewStart > viewEnd {
 		viewStart = viewEnd
 	}
-	lines = lines[viewStart:viewEnd]
+	
+	// Handle edge case where there are no lines
+	if viewStart < len(lines) && viewEnd <= len(lines) && viewStart <= viewEnd {
+		lines = lines[viewStart:viewEnd]
+	} else if len(lines) > 0 {
+		// Fallback to showing last line if bounds are invalid
+		lines = lines[max(0, len(lines)-1):]
+	} else {
+		// No content to display
+		lines = []string{}
+	}
 
 	if l.resize {
 		return strings.Join(lines, "\n")
 	}
+	
+	// Render with proper sizing
+	rendered := strings.Join(lines, "\n")
 	view = t.S().Base.
 		Height(l.height).
 		Width(l.width).
-		Render(strings.Join(lines, "\n"))
+		Render(rendered)
 
 	if !l.hasSelection() {
 		return view
@@ -1249,8 +1270,8 @@ func (l *list[T]) reset(selectedItem string) tea.Cmd {
 // SetSize implements List.
 func (l *list[T]) SetSize(width int, height int) tea.Cmd {
 	oldWidth := l.width
-	l.width = width
-	l.height = height
+	l.width = util.Clamp(width, 0, 500)   // Reasonable max width
+	l.height = util.Clamp(height, 0, 500) // Reasonable max height
 	if oldWidth != width {
 		cmd := l.reset(l.selectedItem)
 		return cmd

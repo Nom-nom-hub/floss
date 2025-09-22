@@ -43,6 +43,11 @@ const (
 
 	// Default number of cycling chars.
 	defaultNumCyclingChars = 10
+	
+	// Enhanced animation types for better micro-interactions
+	LoadingDots   = "●●●●●●●●●●●●●●●"
+	ThinkingDots  = "◈◈◈◈◈◈◈◈◈◈◈◈◈◈◈"
+	ProcessingDots = "◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆"
 )
 
 // Default colors for gradient.

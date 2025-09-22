@@ -160,21 +160,25 @@ func (m *messageCmp) textWidth() int {
 // Applies different border colors and styles based on message role and focus state.
 func (msg *messageCmp) style() lipgloss.Style {
 	t := styles.CurrentTheme()
+	
+	// Use enhanced styling based on FLOSS design system
+	enhancedStyle := styles.NewEnhancedStyle()
+	
 	borderStyle := lipgloss.NormalBorder()
 	if msg.focused {
 		borderStyle = focusedMessageBorder
 	}
 
-	style := t.S().Text
+	style := enhancedStyle.Body
 	if msg.message.Role == message.User {
 		// User messages: Left border with Primary color and 1 unit padding
-		style = style.PaddingLeft(1).BorderLeft(true).BorderStyle(borderStyle).BorderForeground(t.Primary)
+		style = style.PaddingLeft(styles.S).BorderLeft(true).BorderStyle(borderStyle).BorderForeground(t.Primary)
 	} else {
 		// Assistant messages: Left border with GreenDark when focused, 2 units padding when not focused
 		if msg.focused {
-			style = style.PaddingLeft(1).BorderLeft(true).BorderStyle(borderStyle).BorderForeground(t.GreenDark)
+			style = style.PaddingLeft(styles.S).BorderLeft(true).BorderStyle(borderStyle).BorderForeground(t.GreenDark)
 		} else {
-			style = style.PaddingLeft(2)
+			style = style.PaddingLeft(styles.M)
 		}
 	}
 	return style
@@ -304,6 +308,8 @@ func (m *messageCmp) renderThinkingContent() string {
 		} else if finishReason != nil && finishReason.Reason == message.FinishReasonCanceled {
 			footer = t.S().Base.PaddingLeft(1).Render(m.toMarkdown("*Canceled*"))
 		} else {
+			// Use enhanced thinking animation
+			m.anim.SetLabel("Thinking")
 			footer = m.anim.View()
 		}
 	}

@@ -26,13 +26,13 @@ floss run -q "Generate a README for this project"
 	RunE: func(cmd *cobra.Command, args []string) error {
 		quiet, _ := cmd.Flags().GetBool("quiet")
 
-		app, err := setupApp(cmd)
+		appInstance, err := SetupApp(cmd)
 		if err != nil {
 			return err
 		}
-		defer app.Shutdown()
+		defer appInstance.Shutdown()
 
-		if !app.Config().IsConfigured() {
+		if !appInstance.Config().IsConfigured() {
 			return fmt.Errorf("no providers configured - please run 'floss' to set up a provider interactively")
 		}
 
@@ -49,7 +49,7 @@ floss run -q "Generate a README for this project"
 		}
 
 		// Run non-interactive flow using the App method
-		return app.RunNonInteractive(cmd.Context(), prompt, quiet)
+		return appInstance.RunNonInteractive(cmd.Context(), prompt, quiet)
 	},
 }
 

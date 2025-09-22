@@ -2,7 +2,6 @@ package list
 
 import (
 	"regexp"
-	"slices"
 	"sort"
 	"strings"
 
@@ -26,7 +25,7 @@ type FilterableGroupList[T FilterableItem] interface {
 	SetInputPlaceholder(string)
 }
 type filterableGroupList[T FilterableItem] struct {
-	*groupedList[T]
+	GroupedList[T]
 	*filterableOptions
 	width, height int
 	groups        []Group[T]
@@ -43,12 +42,13 @@ func NewFilterableGroupedList[T FilterableItem](items []Group[T], opts ...filter
 		filterableOptions: &filterableOptions{
 			inputStyle:  t.S().Base,
 			placeholder: "Type to filter",
+			keyMap:      DefaultKeyMap(),
 		},
 	}
 	for _, opt := range opts {
 		opt(f.filterableOptions)
 	}
-	f.groupedList = NewGroupedList(items, f.listOptions...).(*groupedList[T])
+	f.GroupedList = NewGroupedList(items, f.listOptions...)
 
 	f.updateKeyMaps()
 
@@ -70,18 +70,18 @@ func (f *filterableGroupList[T]) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyPressMsg:
 		switch {
 		// handle movements
-		case key.Matches(msg, f.keyMap.Down),
-			key.Matches(msg, f.keyMap.Up),
-			key.Matches(msg, f.keyMap.DownOneItem),
-			key.Matches(msg, f.keyMap.UpOneItem),
-			key.Matches(msg, f.keyMap.HalfPageDown),
-			key.Matches(msg, f.keyMap.HalfPageUp),
-			key.Matches(msg, f.keyMap.PageDown),
-			key.Matches(msg, f.keyMap.PageUp),
-			key.Matches(msg, f.keyMap.End),
-			key.Matches(msg, f.keyMap.Home):
-			u, cmd := f.groupedList.Update(msg)
-			f.groupedList = u.(*groupedList[T])
+		case key.Matches(msg, f.filterableOptions.keyMap.Down),
+			key.Matches(msg, f.filterableOptions.keyMap.Up),
+			key.Matches(msg, f.filterableOptions.keyMap.DownOneItem),
+			key.Matches(msg, f.filterableOptions.keyMap.UpOneItem),
+			key.Matches(msg, f.filterableOptions.keyMap.HalfPageDown),
+			key.Matches(msg, f.filterableOptions.keyMap.HalfPageUp),
+			key.Matches(msg, f.filterableOptions.keyMap.PageDown),
+			key.Matches(msg, f.filterableOptions.keyMap.PageUp),
+			key.Matches(msg, f.filterableOptions.keyMap.End),
+			key.Matches(msg, f.filterableOptions.keyMap.Home):
+			u, cmd := f.GroupedList.Update(msg)
+			f.GroupedList = u.(GroupedList[T])
 			return f, cmd
 		default:
 			if !f.inputHidden {
@@ -99,20 +99,20 @@ func (f *filterableGroupList[T]) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	}
-	u, cmd := f.groupedList.Update(msg)
-	f.groupedList = u.(*groupedList[T])
+	u, cmd := f.GroupedList.Update(msg)
+	f.GroupedList = u.(GroupedList[T])
 	return f, cmd
 }
 
 func (f *filterableGroupList[T]) View() string {
 	if f.inputHidden {
-		return f.groupedList.View()
+		return f.GroupedList.View()
 	}
 
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
-		f.inputStyle.Render(f.input.View()),
-		f.groupedList.View(),
+		f.filterableOptions.inputStyle.Render(f.input.View()),
+		f.GroupedList.View(),
 	)
 }
 
@@ -146,16 +146,16 @@ func (f *filterableGroupList[T]) updateKeyMaps() {
 		return binding
 	}
 
-	f.keyMap.Down = updateBinding(f.keyMap.Down)
-	f.keyMap.Up = updateBinding(f.keyMap.Up)
-	f.keyMap.DownOneItem = updateBinding(f.keyMap.DownOneItem)
-	f.keyMap.UpOneItem = updateBinding(f.keyMap.UpOneItem)
-	f.keyMap.HalfPageDown = updateBinding(f.keyMap.HalfPageDown)
-	f.keyMap.HalfPageUp = updateBinding(f.keyMap.HalfPageUp)
-	f.keyMap.PageDown = updateBinding(f.keyMap.PageDown)
-	f.keyMap.PageUp = updateBinding(f.keyMap.PageUp)
-	f.keyMap.End = updateBinding(f.keyMap.End)
-	f.keyMap.Home = updateBinding(f.keyMap.Home)
+	f.filterableOptions.keyMap.Down = updateBinding(f.filterableOptions.keyMap.Down)
+	f.filterableOptions.keyMap.Up = updateBinding(f.filterableOptions.keyMap.Up)
+	f.filterableOptions.keyMap.DownOneItem = updateBinding(f.filterableOptions.keyMap.DownOneItem)
+	f.filterableOptions.keyMap.UpOneItem = updateBinding(f.filterableOptions.keyMap.UpOneItem)
+	f.filterableOptions.keyMap.HalfPageDown = updateBinding(f.filterableOptions.keyMap.HalfPageDown)
+	f.filterableOptions.keyMap.HalfPageUp = updateBinding(f.filterableOptions.keyMap.HalfPageUp)
+	f.filterableOptions.keyMap.PageDown = updateBinding(f.filterableOptions.keyMap.PageDown)
+	f.filterableOptions.keyMap.PageUp = updateBinding(f.filterableOptions.keyMap.PageUp)
+	f.filterableOptions.keyMap.End = updateBinding(f.filterableOptions.keyMap.End)
+	f.filterableOptions.keyMap.Home = updateBinding(f.filterableOptions.keyMap.Home)
 }
 
 func (m *filterableGroupList[T]) GetSize() (int, int) {
@@ -166,23 +166,23 @@ func (f *filterableGroupList[T]) SetSize(w, h int) tea.Cmd {
 	f.width = w
 	f.height = h
 	if f.inputHidden {
-		return f.groupedList.SetSize(w, h)
+		return f.GroupedList.SetSize(w, h)
 	}
 	if f.inputWidth == 0 {
 		f.input.SetWidth(w)
 	} else {
 		f.input.SetWidth(f.inputWidth)
 	}
-	return f.groupedList.SetSize(w, h-(f.inputHeight()))
+	return f.GroupedList.SetSize(w, h-(f.inputHeight()))
 }
 
 func (f *filterableGroupList[T]) inputHeight() int {
-	return lipgloss.Height(f.inputStyle.Render(f.input.View()))
+	return lipgloss.Height(f.filterableOptions.inputStyle.Render(f.input.View()))
 }
 
 func (f *filterableGroupList[T]) clearItemState() []tea.Cmd {
 	var cmds []tea.Cmd
-	for _, item := range slices.Collect(f.items.Seq()) {
+	for _, item := range f.Items() {
 		if i, ok := any(item).(layout.Focusable); ok {
 			cmds = append(cmds, i.Blur())
 		}
@@ -252,10 +252,11 @@ func (f *filterableGroupList[T]) filterItemsInGroup(group Group[T], query string
 
 func (f *filterableGroupList[T]) Filter(query string) tea.Cmd {
 	cmds := f.clearItemState()
-	f.selectedItem = ""
+	// Use the SetSelected method instead of directly accessing the field
+	cmds = append(cmds, f.GroupedList.SetSelected(""))
 
 	if query == "" {
-		return f.groupedList.SetGroups(f.groups)
+		return tea.Batch(append(cmds, f.GroupedList.SetGroups(f.groups))...)
 	}
 
 	query = strings.ToLower(strings.ReplaceAll(query, " ", ""))
@@ -275,13 +276,13 @@ func (f *filterableGroupList[T]) Filter(query string) tea.Cmd {
 		}
 	}
 
-	cmds = append(cmds, f.groupedList.SetGroups(result))
+	cmds = append(cmds, f.GroupedList.SetGroups(result))
 	return tea.Batch(cmds...)
 }
 
 func (f *filterableGroupList[T]) SetGroups(groups []Group[T]) tea.Cmd {
 	f.groups = groups
-	return f.groupedList.SetGroups(groups)
+	return f.GroupedList.SetGroups(groups)
 }
 
 func (f *filterableGroupList[T]) Cursor() *tea.Cursor {
@@ -293,16 +294,16 @@ func (f *filterableGroupList[T]) Cursor() *tea.Cursor {
 
 func (f *filterableGroupList[T]) Blur() tea.Cmd {
 	f.input.Blur()
-	return f.groupedList.Blur()
+	return f.GroupedList.Blur()
 }
 
 func (f *filterableGroupList[T]) Focus() tea.Cmd {
 	f.input.Focus()
-	return f.groupedList.Focus()
+	return f.GroupedList.Focus()
 }
 
 func (f *filterableGroupList[T]) IsFocused() bool {
-	return f.groupedList.IsFocused()
+	return f.GroupedList.IsFocused()
 }
 
 func (f *filterableGroupList[T]) SetInputWidth(w int) {
